@@ -45,7 +45,7 @@ This is currently a one-manned side-project with no official existence (and no m
   - [ ] Statistical Processing
   - [ ] Validation
   
-- [ ] **Response Inhibition**: Measuring the suppression of the triggered motor response.
+- [ ] **Response Initiation + Response Inhibition**: Measuring the suppression of the motor response or its initiation.
   - [x] Design
   - [ ] Implementation
   - [ ] Statistical Processing
@@ -69,4 +69,4 @@ This is currently a one-manned side-project with no official existence (and no m
   - [ ] Statistical Processing
   - [ ] Validation
   
-Other non-designed components include **Response initiation** (the time to decide wether to initiate a response or not), **mental set shifting** (switching between different set of rules), **Conflict Monitoring** (the detection of a conflict), or **Updating in Working Memory** (the ability to manipulate and update the information in WM).
+Other non-designed components include **mental set shifting** (switching between different set of rules), **Conflict Monitoring** (the detection of a conflict), or **Updating in Working Memory** (the ability to manipulate and update the information in WM).
