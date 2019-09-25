@@ -90,20 +90,22 @@ def response_selection(n_trials=20):
 
 # Part 3
 # -----------------------------------------------------------------------------
-def response_inhibition(n_trials=20, min_SSRT=100, max_SSRT=300, frame = 16.66667):
+def response_inhibition(n_trials=20, min_SSRT=0, max_SSRT=300, frame = 16.66667):
 
-    def generate_data(n_trials, min_SSRT=100, max_SSRT=300, frame= 16.66667, adaptive=False):
+    def generate_data(n_trials, min_SSRT=0, max_SSRT=300, frame= 16.66667, adaptive=False):
         data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
                 "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
 
         # SSRT
-        ss = np.array(randomize_and_repeat_without_repetition([False, False, True], int(n_trials/3)) + [False] * int(n_trials-int(n_trials/3)*3))
+        ss = np.array(randomize_and_repeat_without_repetition([False, False, False, True], int(n_trials/4)) + [False] * int(n_trials-int(n_trials/4)*4))
         data["Stop_Signal"] = ss
         data["Stop_Signal_RT"] = np.array([np.nan] * int(n_trials))
 
         if adaptive is False:
-            ssrt = generate_interval_frames(min_SSRT, max_SSRT, int(sum(ss)-int(sum(ss)/3)))
-            data["Stop_Signal_RT"][ss == True] = randomize_without_repetition([0] * int(sum(ss)/3) + list(ssrt))
+#            ssrt = generate_interval_frames(min_SSRT, max_SSRT, int(sum(ss)-int(sum(ss)/4)))
+#            data["Stop_Signal_RT"][ss == True] = randomize_without_repetition([0] * int(sum(ss)/3) + list(ssrt))
+            ssrt = generate_interval_frames(min_SSRT, max_SSRT, int(sum(ss)))
+            data["Stop_Signal_RT"][ss == True] = randomize_without_repetition(list(ssrt))
         else:
             data["Stop_Signal_RT"][ss == True] = np.array([-1]*len(data["Stop_Signal_RT"][ss == True]))
 
@@ -128,7 +130,7 @@ def response_inhibition(n_trials=20, min_SSRT=100, max_SSRT=300, frame = 16.6666
 
 
     # Instructions
-    display_instructions("""Wait! It seems that some CIVILIANS are present in some of the REBELS' ships.\n\nUnfortunately, our scanner can take some time to detect them.\n\nYour priority is still shoot the incomming ships as FAST as possible, but avoid shooting if you see a RED CROSS.""")
+    display_instructions("""Wait! It seems that some CIVILIANS are present in some of the REBELS' ships.\n\nUnfortunately, our scanner can take some time to detect them.\n\nYour priority is still shoot the incomming ships as FAST as possible, but try avoiding shooting if you see a RED CROSS.\nBut between ourselves... fire at will and do not wait until the scan is complete.""")
 
     staircase = nk.staircase(signal = generate_interval_frames(0, max_SSRT, int(max_SSRT/frame)),
                              treshold = 0.5,
@@ -184,13 +186,39 @@ def attention_priming(n_trials=20):
     # Data creation
     data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
             "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
-    data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1500, n_trials/2), 2)
+    data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
     data = pd.DataFrame.from_dict(data)
     data = data.sample(len(data)).reset_index(drop=True)
     data = data.to_dict(orient="index")
 
     # Instructions
-    display_instructions("""Ok, well done! You're doing great. We are out the civilian zone, so NO CIVILIANS are to be expected from now on.\n\nFor your next mission, our engineers have improvied your scanner, so we can detect from where the ennemies arrive from away!\n\nGive it a try, and show us again how FAST you are.""")
+    display_instructions("""Well done! You're doing great. We are out the civilian zone, so NO CIVILIANS are to be expected from now on.\n\nFor your next mission, our engineers have improved your scanner, so we can detect from where the ennemies arrive from away!\n\nGive it a try, and show us again how FAST you are.""")
+
+    for trial in range(n_trials):
+        data[trial].update(ITI(data[trial]["ITI"]))
+        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"]))
+        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"]))
+        data[trial]["Trial_Order"] = trial + 1
+
+    data = pd.DataFrame.from_dict(data, orient="index")
+    return(data)
+
+
+# Part 5
+# -----------------------------------------------------------------------------
+def conflict_resolution(n_trials=20):
+
+    # Data creation
+    data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
+            "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
+    data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
+    data["Conflict"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
+    data = pd.DataFrame.from_dict(data)
+    data = data.sample(len(data)).reset_index(drop=True)
+    data = data.to_dict(orient="index")
+
+    # Instructions
+    display_instructions("""Bad news! We have been informed the ennemies managed to hack our lateral radars. This means you can only trust your central radar (the central arrow).""")
 
     for trial in range(n_trials):
         data[trial].update(ITI(data[trial]["ITI"]))
