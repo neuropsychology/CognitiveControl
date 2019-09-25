@@ -6,7 +6,7 @@
 
 While an accurate assessment of cognitive control is critical in neuropsychological practice and research, it often remains a challenge:
 
-- The tasks used in clinical practice are very different from the ones used in research
+- The tasks used in clinical practice are very different from the ones used in research.
 - The assessment of different cognitive control components is done through very different tasks, requiring a selection that rarely provides a comprehensive view
 - The existing tasks are often not very user-friendly, being often long, boring, not interesting, stressful and tiring
 
