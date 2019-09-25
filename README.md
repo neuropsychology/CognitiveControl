@@ -23,7 +23,7 @@ The goal of this project is to build a **single task** that measures several **d
 
 ## Contribution and Collaboration
 
-This is currently a one-manned side-project with no official existence (and no money). However, if you're interested by this idea (or have any thoughts, suggestions or ideas), please let me know by [opening an issue](https://github.com/neuropsychology/CognitiveControl/issues) or contacting me ([dom.makowski@gmail.com](https://dominiquemakowski.github.io/)).
+This is currently a side-project with no official existence (and no money). However, if you're interested by this idea (or have any thoughts, suggestions or ideas), please let me know by [opening an issue](https://github.com/neuropsychology/CognitiveControl/issues) or contacting me ([dom.makowski@gmail.com](https://dominiquemakowski.github.io/)).
 
 ## Task Description
 
