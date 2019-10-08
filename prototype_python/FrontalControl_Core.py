@@ -26,8 +26,8 @@ def display_explosion(side="RIGHT"):
         n.image("assets/explosion.png", x=5, y=6.5, size=5)
     elif side == "LEFT":
         n.image("assets/explosion.png", x=-5, y=6.5, size=5)
-    else:
-        n.image("assets/explosion.png", x=0, y=-8, size=7)
+    #else:
+        #n.image("assets/explosion.png", x=0, y=-8, size=7)
 
 def display_ennemy(side="RIGHT", stop=False):
     if side == "RIGHT":
@@ -57,16 +57,20 @@ def display_instructions(text="text instructions", text_end="Shoot to start the 
     n.refresh()
     n.response(allow=["DOWN", "RIGHT", "LEFT", "SPACE"])
 
-def display_cue(side="RIGHT", conflict=False):
+def display_cue(side="RIGHT", congruence="CONGRUENT"):
     if side == "RIGHT":
-        angle = 0
-        angle_sides = 0
-        if conflict is True:
+        if congruence == "CONGRUENT":
+            angle = 0
+            angle_sides = 0
+        elif congruence == "INCONGRUENT":
+            angle = 0
             angle_sides = 180
     else:
-        angle = 180
-        angle_sides = 180
-        if conflict is True:
+        if congruence == "CONGRUENT":
+            angle = 180
+            angle_sides = 180
+        elif congruence == "INCONGRUENT":
+            angle = 180
             angle_sides = 0
 
     n.image("assets/arrow_green.png", x=-2, y=6.5, size=1.75, rotate=angle_sides)
@@ -162,10 +166,10 @@ def display_stimulus(side="RIGHT", always_right = False, stop = np.nan, time_max
             "Trial_Time_End": datetime.datetime.now()})
 
 
-def prime(side="RIGHT", duration=1000, conflict=False):
+def prime(side="RIGHT", duration=1000, congruence="CONGRUENT"):
     display_background()
     display_ship()
-    display_cue(side=side, conflict=conflict)
+    display_cue(side=side, congruence=congruence)
     n.refresh()
     time = datetime.datetime.now()
     response = np.nan

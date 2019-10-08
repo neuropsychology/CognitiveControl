@@ -15,8 +15,8 @@ t0 = datetime.datetime.now()
 
 results = {}
 
-
-
+# Part 1
+# -----------------------------------------------------------------------------
 df_ProcessingSpeed = processing_speed(n_trials=6)
 df_ProcessingSpeed.to_csv("../data/S1_ProcessingSpeed.csv", index=False)
 try:
@@ -25,8 +25,8 @@ except:
     print("Error: Couldn't process Processing Speed (p1) data")
 
 
-
-
+# Part 2
+# -----------------------------------------------------------------------------
 df_ResponseSelection = response_selection(n_trials=4)
 df_ResponseSelection.to_csv("../data/S1_ResponseSelection.csv", index=False)
 try:
@@ -37,10 +37,8 @@ except:
     results["SSRT_Max"] = df_ResponseSelection["RT"].quantile(0.10)
 
 
-
-
-
-
+# Part 3
+# -----------------------------------------------------------------------------
 df_ResponseInhibition, staircase = response_inhibition(n_trials=40,
                                             min_SSRT=results["SSRT_Min"],
                                             max_SSRT=results["SSRT_Max"])
@@ -51,8 +49,8 @@ except:
     print("Error: Couldn't process Response Inhibition (p3) data")
 
 
-
-
+# Part 4
+# -----------------------------------------------------------------------------
 df_AttentionPriming = attention_priming(n_trials=20)
 df_AttentionPriming.to_csv("../data/S0_AttentionPriming.csv", index=False)
 #try:
@@ -61,7 +59,21 @@ df_AttentionPriming.to_csv("../data/S0_AttentionPriming.csv", index=False)
 #    print("Error: Couldn't process Attention Priming (p4) data")
 
 
+print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
+
+
+# Part 5
+# -----------------------------------------------------------------------------
+df_ConflictResolution = conflict_resolution(n_trials=20)
+df_ConflictResolution.to_csv("../data/S0_ConflictResolution.csv", index=False)
 
 print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
 
+
+# Part 6
+# -----------------------------------------------------------------------------
+df_ConflictResolution_2 = conflict_resolution_2(n_trials=20)
+df_ConflictResolution_2.to_csv("../data/S0_ConflictResolution_2.csv", index=False)
+
+print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
 n.close()
