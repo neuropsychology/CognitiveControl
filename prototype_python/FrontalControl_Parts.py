@@ -276,7 +276,7 @@ def conflict_resolution(n_trials=20):
     data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
             "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
     data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
-    data["Conflict"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
+    data["Congruence"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
     data = pd.DataFrame.from_dict(data)
     data = data.sample(len(data)).reset_index(drop=True)
     data = data.to_dict(orient="index")
@@ -292,7 +292,7 @@ def conflict_resolution(n_trials=20):
 
     for trial in range(n_trials):
         data[trial].update(ITI(data[trial]["ITI"]))
-        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"], congruency = "INCONGRUENT"))
+        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"], congruence = "INCONGRUENT"))
         data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"]))
         data[trial]["Trial_Order"] = trial + 1
 
@@ -306,7 +306,7 @@ def conflict_resolution_2(n_trials=20):
 
     # Data creation
     data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
-            "Congruency": ["CONGRUENT"]*int(n_trials/2) + ["INCONGRUENT"]* int(n_trials/2),
+            "Congruence": ["CONGRUENT"]*int(n_trials/2) + ["INCONGRUENT"]* int(n_trials/2),
             "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
     data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
     #data["Conflict"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
@@ -325,7 +325,7 @@ def conflict_resolution_2(n_trials=20):
 
     for trial in range(n_trials):
         data[trial].update(ITI(data[trial]["ITI"]))
-        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"], congruency=data[trial]["Congruency"]))
+        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"], congruence=data[trial]["Congruence"]))
         data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"]))
         data[trial]["Trial_Order"] = trial + 1
 

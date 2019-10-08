@@ -57,19 +57,19 @@ def display_instructions(text="text instructions", text_end="Shoot to start the 
     n.refresh()
     n.response(allow=["DOWN", "RIGHT", "LEFT", "SPACE"])
 
-def display_cue(side="RIGHT", congruency="CONGRUENT"):
+def display_cue(side="RIGHT", congruence="CONGRUENT"):
     if side == "RIGHT":
-        if congruency == "CONGRUENT":
+        if congruence == "CONGRUENT":
             angle = 0
             angle_sides = 0
-        elif congruency == "INCONGRUENT":
+        elif congruence == "INCONGRUENT":
             angle = 0
             angle_sides = 180
     else:
-        if congruency == "CONGRUENT":
+        if congruence == "CONGRUENT":
             angle = 180
             angle_sides = 180
-        elif congruency == "INCONGRUENT":
+        elif congruence == "INCONGRUENT":
             angle = 180
             angle_sides = 0
 
@@ -166,10 +166,10 @@ def display_stimulus(side="RIGHT", always_right = False, stop = np.nan, time_max
             "Trial_Time_End": datetime.datetime.now()})
 
 
-def prime(side="RIGHT", duration=1000, congruency="CONGRUENT"):
+def prime(side="RIGHT", duration=1000, congruence="CONGRUENT"):
     display_background()
     display_ship()
-    display_cue(side=side, congruency=congruency)
+    display_cue(side=side, congruence=congruence)
     n.refresh()
     time = datetime.datetime.now()
     response = np.nan
