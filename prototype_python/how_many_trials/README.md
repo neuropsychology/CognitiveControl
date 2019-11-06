@@ -1,6 +1,11 @@
 
 # What is the Optimal Number of Trials
 
+The goal is to estimate what is the minimum of trials (so the task is as
+short as possible) required to obtain stable estimates for a single
+individual (different colors in the figures indicate different
+participants).
+
 <details>
 
 <summary>Convenience functions (click to see the code)</summary>
@@ -88,21 +93,24 @@ fig1 <- cowplot::plot_grid(
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
-    coord_cartesian(ylim = c(50, 700)),
+    coord_cartesian(ylim = c(50, 700)) +
+    xlab("Number of trials"),
   cowplot::plot_grid(df %>%
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     geom_vline(xintercept = 50, linetype = "dotted") +
     geom_hline(yintercept = 0) +
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
-    scale_color_viridis_d(guide = FALSE),
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials"),
   df %>%
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     geom_vline(xintercept = 50, linetype = "dotted") +
     geom_hline(yintercept = 0) +
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
-    scale_color_viridis_d(guide = FALSE)),
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials")),
   nrow = 2
 )
 ```
@@ -135,21 +143,24 @@ fig2 <- cowplot::plot_grid(
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
-    scale_fill_viridis_d(guide = FALSE),
+    scale_fill_viridis_d(guide = FALSE) +
+    xlab("Number of trials"),
   cowplot::plot_grid(df %>%
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
-    scale_color_viridis_d(guide = FALSE),
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials"),
   df %>%
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
-    scale_color_viridis_d(guide = FALSE)),
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials")),
   nrow = 2
 )
 ```
@@ -189,7 +200,8 @@ fig3 <- cowplot::plot_grid(
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
     facet_grid(~Conflict, labeller = "label_both") +
-    coord_cartesian(ylim = c(100, 1000)),
+    coord_cartesian(ylim = c(100, 1000)) +
+    xlab("Number of trials"),
   cowplot::plot_grid(df %>%
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     geom_vline(xintercept = 120, linetype = "dotted") +
@@ -198,7 +210,8 @@ fig3 <- cowplot::plot_grid(
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     facet_grid(~Conflict, labeller = "label_both") +
-    coord_cartesian(ylim = c(-200, 100)),
+    coord_cartesian(ylim = c(-200, 100)) +
+    xlab("Number of trials"),
   df %>%
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     geom_vline(xintercept = 120, linetype = "dotted") +
@@ -207,7 +220,8 @@ fig3 <- cowplot::plot_grid(
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     facet_grid(~Conflict, labeller = "label_both") +
-    coord_cartesian(ylim = c(-100, 100))),
+    coord_cartesian(ylim = c(-100, 100)) +
+    xlab("Number of trials")),
   nrow = 2
 )
 ```
@@ -281,12 +295,14 @@ for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", ful
 
 
 fig5 <- df %>%
-    ggplot(aes(x = Stop_Signal_RT, y = Predicted)) +
-    geom_ribbon(aes(ymin = CI_low, ymax = CI_high, fill = Participant), alpha = 0.1) +
-    geom_line(aes(color = Participant), size = 1) +
-    theme_modern() +
-    scale_color_viridis_d(guide = FALSE) +
-    scale_fill_viridis_d(guide = FALSE) 
+  ggplot(aes(x = Stop_Signal_RT, y = Predicted)) +
+  geom_ribbon(aes(ymin = CI_low, ymax = CI_high, fill = Participant), alpha = 0.1) +
+  geom_line(aes(color = Participant), size = 1) +
+  theme_modern() +
+  scale_color_viridis_d(guide = FALSE) +
+  scale_fill_viridis_d(guide = FALSE)  +
+  xlab("Stop Signal RT (SSRT)") +
+  ylab("Probability of Inhibition Failure")
 ```
 
 </p>
@@ -342,7 +358,8 @@ fig6 <- cowplot::plot_grid(
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
-    coord_cartesian(ylim = c(-7, 3)),
+    coord_cartesian(ylim = c(-7, 3)) +
+    xlab("Number of trials"),
   df %>%
     ggplot(aes(x = Trial_Order, y = Slope)) +
     geom_hline(yintercept = 0) +
@@ -351,7 +368,8 @@ fig6 <- cowplot::plot_grid(
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
-    coord_cartesian(ylim = c(-0.07, 0.07))
+    coord_cartesian(ylim = c(-0.07, 0.07)) +
+    xlab("Number of trials")
 )
 ```
 
@@ -387,7 +405,8 @@ fig7 <- df %>%
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
-    facet_grid(~Conflict, labeller = "label_both")
+    facet_grid(~Conflict, labeller = "label_both") +
+    xlab("Number of trials")
 ```
 
 </p>
