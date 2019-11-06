@@ -47,17 +47,23 @@ This is currently a side-project with no official existence (and no money). Howe
   
 - [ ] **Response Initiation + Response Inhibition**: Measuring the suppression of the motor response or its initiation.
   - [x] Design
-  - [ ] Implementation
+  - [x] Implementation
   - [ ] Statistical Processing
   - [ ] Validation
   
 - [ ] **Conflict Resolution**: Measuring the influence of a perceptive conflict.
   - [x] Design
-  - [ ] Implementation
+  - [x] Implementation
   - [ ] Statistical Processing
   - [ ] Validation
   
-- [ ] **Conflict Monitoring + Strategy Inhibition**: Measuring the time it takes to detect a drop in a previously efficient strategy and the time it takes to adjust and initiate a new behaviour.
+- [ ] **Priming**: The effect of being attentionally primed.
+  - [x] Design
+  - [ ] Implementation
+  - [ ] Statistical Processing
+  - [ ] Validation
+
+- [ ] **Priming + Strategy Inhibition**: Measuring the time it takes to detect a drop in the usefulness a cue and the time it takes to adjust and initiate a new behaviour.
   - [x] Design
   - [ ] Implementation
   - [ ] Statistical Processing
