@@ -87,7 +87,8 @@ fig1 <- cowplot::plot_grid(
     geom_line(aes(color = Participant), size = 1) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
-    scale_fill_viridis_d(guide = FALSE),
+    scale_fill_viridis_d(guide = FALSE) +
+    coord_cartesian(ylim = c(50, 700)),
   cowplot::plot_grid(df %>%
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     geom_vline(xintercept = 50, linetype = "dotted") +
