@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import datetime
@@ -9,71 +10,75 @@ from FrontalControl_Core import *
 from FrontalControl_Parts import *
 from FrontalControl_Statistics import *
 
+
+# Parameters
+testmode = False
+#n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
+n_trials = {"P1": 10, "P2": 10, "P3": 10, "P4": 10}
+
+# Initialization
 n.start()
-
 t0 = datetime.datetime.now()
-
 results = {}
+
+# Identification
+n.newpage((74,20,140))
+n.write("STAR CONTROL", y = 1.5, color = "white", size = 3)
+participant = n.ask("ID: ", x = -1, y = -3, color = "white", background = (74,20,140), size = 1.5)
+
+# Create data folder
+path = './data/' + participant + "/"
+if os.path.exists(path) is False:
+    os.mkdir(path)
+
+
+
 
 # Part 1
 # -----------------------------------------------------------------------------
-df_ProcessingSpeed = processing_speed(n_trials=6)
-df_ProcessingSpeed.to_csv("../data/S1_ProcessingSpeed.csv", index=False)
-try:
-    results.update(process_processing_speed(df_ProcessingSpeed))
-except:
-    print("Error: Couldn't process Processing Speed (p1) data")
+start_time = datetime.datetime.now()
+df_ProcessingSpeed = processing_speed(n_trials=n_trials["P1"], testmode = testmode)
+save_data(df_ProcessingSpeed, start_time, participant, task = "Processing_Speed", path = path + "P1_ProcessingSpeed")
 
 
-# Part 2
-# -----------------------------------------------------------------------------
-df_ResponseSelection = response_selection(n_trials=4)
-df_ResponseSelection.to_csv("../data/S1_ResponseSelection.csv", index=False)
-try:
-    results.update(process_response_selection(df_ResponseSelection))
-except:
-    print("Error: Couldn't process Response Selection (p2) data")
-    results["SSRT_Min"] = 16.66667
-    results["SSRT_Max"] = df_ResponseSelection["RT"].quantile(0.10)
+## Part 2
+## -----------------------------------------------------------------------------
+start_time = datetime.datetime.now()
+df_ResponseSelection = response_selection(n_trials=n_trials["P2"], testmode = testmode)
+save_data(df_ResponseSelection, start_time, participant, task = "Response_Selection", path = path + "P2_ResponseSelection")
+
 
 
 # Part 3
 # -----------------------------------------------------------------------------
-df_ResponseInhibition, staircase = response_inhibition(n_trials=40,
+results["SSRT_Min"] = 16.66667
+#results["SSRT_Max"] = convert_to_frames(df_ResponseSelection["RT"].quantile(0.10))
+results["SSRT_Max"] = convert_to_frames(df_ResponseSelection["RT"].median())
+
+
+start_time = datetime.datetime.now()
+df_ResponseInhibition, staircase = response_inhibition(n_trials=n_trials["P3"],
                                             min_SSRT=results["SSRT_Min"],
-                                            max_SSRT=results["SSRT_Max"])
-df_ResponseInhibition.to_csv("../data/S0_ResponseInhibition.csv", index=False)
-try:
-    results.update(process_response_selection(df_ResponseInhibition))
-except:
-    print("Error: Couldn't process Response Inhibition (p3) data")
+                                            max_SSRT=results["SSRT_Max"],
+                                            testmode = testmode)
+save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhibition", path = path + "P3_ResponseInhibition")
+
 
 
 # Part 4
 # -----------------------------------------------------------------------------
-df_AttentionPriming = attention_priming(n_trials=20)
-df_AttentionPriming.to_csv("../data/S0_AttentionPriming.csv", index=False)
-#try:
-#    results.update(process_attention_priming(df_AttentionPriming))
-#except:
-#    print("Error: Couldn't process Attention Priming (p4) data")
-
-
-print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
+start_time = datetime.datetime.now()
+df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"])
+save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + "P4_ConflictResolution")
 
 
 # Part 5
 # -----------------------------------------------------------------------------
-df_ConflictResolution = conflict_resolution(n_trials=20)
-df_ConflictResolution.to_csv("../data/S0_ConflictResolution.csv", index=False)
+#start_time = datetime.datetime.now()
+#df_AttentionPriming = attention_priming(n_trials=20)
+#save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + "P5_AttentionPriming")
 
-print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
 
-
-# Part 6
-# -----------------------------------------------------------------------------
-df_ConflictResolution_2 = conflict_resolution_2(n_trials=20)
-df_ConflictResolution_2.to_csv("../data/S0_ConflictResolution_2.csv", index=False)
 
 print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
 n.close()

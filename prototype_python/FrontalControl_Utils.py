@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import neurokit as nk
+import datetime
 import random
 
 def random_number(mini=0, maxi=0, n=1, seed=None):
@@ -85,3 +86,17 @@ def generate_interval_frames(mini, maxi, n=10, frame=16.6666667):
     x = np.linspace(np.round(mini/frame), np.round(maxi/frame), int(n), endpoint = True)
     x = np.round(x)*frame
     return(x)
+
+
+
+def convert_to_frames(x, frame=16.6666667):
+    x = np.round(x/frame)
+    return(x*frame)
+
+
+def save_data(data, start_time, participant, task, path):
+    data["Duration"] = (datetime.datetime.now() - start_time).total_seconds() / 60
+    data["Participant"] = participant
+    data["Task"] = task
+    data.to_csv(path + ".csv", index=False)
+    data.to_excel(path + ".xlsx", index=False)

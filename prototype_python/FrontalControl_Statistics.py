@@ -9,7 +9,7 @@ import statsmodels.api as sm
 # =============================================================================
 def process_processing_speed(data=None, summary=False):
     if data is None:
-        data = pd.read_csv("../data/S0_ProcessingSpeed.csv")
+        data = pd.read_csv("../NumberTrialsCalibration/data/testBoonHan_ProcessingSpeed.csv")
 
     data = data.copy()
     data.loc[:,'Right_Bias'] = np.where(data.loc[:,'Stimulus_Side']=='RIGHT', "RIGHT", "LEFT")
@@ -52,6 +52,7 @@ def process_processing_speed(data=None, summary=False):
     # Analyze Order
     order_ref = pd.DataFrame({"Trial_Order": np.linspace(np.min(df["Trial_Order"]), np.max(df["Trial_Order"]), 1000),
                         "ITI": iti_min,
+                        "ITI": pred_iti["ITI"][iti_min],
                         "Right_Bias": ["LEFT"]*1000,
                         "Previous_Response": ["NO"]*1000,
                         "Previous_RT": [0]*1000})

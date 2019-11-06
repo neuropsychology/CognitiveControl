@@ -26,20 +26,28 @@ def display_explosion(side="RIGHT"):
         n.image("assets/explosion.png", x=5, y=6.5, size=5)
     elif side == "LEFT":
         n.image("assets/explosion.png", x=-5, y=6.5, size=5)
-    #else:
-        #n.image("assets/explosion.png", x=0, y=-8, size=7)
+    elif side == "CENTRE":
+        n.image("assets/explosion.png", x=0, y=-8, size=7)
 
-def display_ennemy(side="RIGHT", stop=False):
+def display_enemy(side="RIGHT", stop=False, allies = False):
     if side == "RIGHT":
-        if stop is True:
-            n.image("assets/ennemy_stop.png", x=5, y=6.5, size=3)
-        else:
-            n.image("assets/ennemy.png", x=5, y=6.5, size=3)
+        if allies is False:
+            if stop is True:
+                n.image("assets/enemy_stop.png", x=5, y=6.5, size=3)
+            else:
+                n.image("assets/enemy.png", x=5, y=6.5, size=3)
+        if allies is True:
+            n.image("assets/enemy.png", x=5, y=6.5, size=3)
+            n.image("assets/enemy.png", x=-5, y=6.5, size=3)
     elif side == "LEFT":
-        if stop is True:
-            n.image("assets/ennemy_stop.png", x=-5, y=6.5, size=3)
-        else:
-            n.image("assets/ennemy.png", x=-5, y=6.5, size=3)
+        if allies is False:
+            if stop is True:
+                n.image("assets/enemy_stop.png", x=-5, y=6.5, size=3)
+            else:
+                n.image("assets/enemy.png", x=-5, y=6.5, size=3)
+        if allies is True:
+            n.image("assets/enemy.png", x=5, y=6.5, size=3)
+            n.image("assets/enemy.png", x=-5, y=6.5, size=3)
 
 def display_ship():
     n.image("assets/spaceship.png", x=0, y=-8, size=3)
@@ -50,26 +58,26 @@ def display_fire(side="RIGHT"):
     elif side == "LEFT":
         n.image("assets/fire.png", x=-0.65, y=-7.75)
 
-def display_instructions(text="text instructions", text_end="Shoot to start the mission."):
-    n.newpage((74,20,140), auto_refresh=False)
+def display_instructions(text="text instructions", text_end="Shoot to start the mission.", background = (74,20,140)):
+    n.newpage(background, auto_refresh=False)
     n.write("\n\n\n" + text, color="white", long_text = True)
     n.write(text_end, color="white", y=-9)
     n.refresh()
     n.response(allow=["DOWN", "RIGHT", "LEFT", "SPACE"])
 
-def display_cue(side="RIGHT", congruence="CONGRUENT"):
+def display_cue(side="RIGHT", conflict=False):
     if side == "RIGHT":
-        if congruence == "CONGRUENT":
+        if conflict is False:
             angle = 0
             angle_sides = 0
-        elif congruence == "INCONGRUENT":
+        elif conflict is True:
             angle = 0
             angle_sides = 180
     else:
-        if congruence == "CONGRUENT":
+        if conflict is False:
             angle = 180
             angle_sides = 180
-        elif congruence == "INCONGRUENT":
+        elif conflict is True:
             angle = 180
             angle_sides = 0
 
@@ -94,7 +102,7 @@ def display_cue(side="RIGHT", congruence="CONGRUENT"):
 # =============================================================================
 # BASIC
 # =============================================================================
-def ITI(duration=1000):
+def ITI(duration=1000, testmode = False):
     display_background()
     display_ship()
     n.refresh()
@@ -116,11 +124,17 @@ def ITI(duration=1000):
 
 
 
-def display_stimulus(side="RIGHT", always_right = False, stop = np.nan, time_max = 1500):
+def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = np.nan, time_max = 1500, testmode = False):
     if stop == 0:
-        display_ennemy(side=side, stop=True)
+        if allies is False:
+            display_enemy(side=side, stop=True)
+        elif allies is True:
+            display_enemy(side=side, stop=True, allies = True)
     else:
-        display_ennemy(side=side)
+        if allies is False:
+            display_enemy(side=side)
+        elif allies is True:
+            display_enemy(side=side, allies = True)
     n.refresh()
     time = datetime.datetime.now()
     if always_right is True:
@@ -147,7 +161,7 @@ def display_stimulus(side="RIGHT", always_right = False, stop = np.nan, time_max
                 RT = 0
                 response, RT = n.response(allow=["LEFT", "RIGHT"], time_max = stop)
                 if response not in ["LEFT", "RIGHT"]:
-                    display_ennemy(side=side, stop=True)
+                    display_enemy(side=side, stop=True)
                     n.refresh()
                     response, RT = n.response(allow=["LEFT", "RIGHT"], time_max = time_max - stop)
                     RT += stop
@@ -166,10 +180,10 @@ def display_stimulus(side="RIGHT", always_right = False, stop = np.nan, time_max
             "Trial_Time_End": datetime.datetime.now()})
 
 
-def prime(side="RIGHT", duration=1000, congruence="CONGRUENT"):
+def prime(side="RIGHT", duration=1000, conflict=False):
     display_background()
     display_ship()
-    display_cue(side=side, congruence=congruence)
+    display_cue(side=side, conflict=conflict)
     n.refresh()
     time = datetime.datetime.now()
     response = np.nan
