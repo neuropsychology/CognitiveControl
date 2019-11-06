@@ -219,34 +219,47 @@ fig3 <- cowplot::plot_grid(
 
 ## Errors
 
-### Task 2: Response Selection
+<!-- ### Task 2: Response Selection -->
 
-<details>
+<!-- <details><summary>See code</summary> -->
 
-<summary>See code</summary>
+<!-- <p> -->
 
-<p>
+<!-- ```{r, echo = TRUE, warning=FALSE, message=FALSE} -->
 
-``` r
-df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ResponseSelection.csv", full.names = TRUE)){
-  df <- rbind(df, cumulative_errors(read.csv(path)))
-}
+<!-- df <- data.frame() -->
 
-fig4 <- df %>%
-    ggplot(aes(x = Trial_Order, y = Error_Probability)) +
-    geom_vline(xintercept = 60, linetype = "dotted") +
-    geom_line(aes(color = Participant), size = 1) +
-    theme_modern() +
-    scale_color_viridis_d(guide = FALSE) +
-    scale_fill_viridis_d(guide = FALSE)
-```
+<!-- for(path in list.files(path = "data/", pattern = "*_ResponseSelection.csv", full.names = TRUE)){ -->
 
-</p>
+<!--   df <- rbind(df, cumulative_errors(read.csv(path))) -->
 
-</details>
+<!-- } -->
 
-![](figures/unnamed-chunk-10-1.png)<!-- -->
+<!-- fig4 <- df %>% -->
+
+<!--     ggplot(aes(x = Trial_Order, y = Error_Probability)) + -->
+
+<!--     geom_vline(xintercept = 60, linetype = "dotted") + -->
+
+<!--     geom_line(aes(color = Participant), size = 1) + -->
+
+<!--     theme_modern() + -->
+
+<!--     scale_color_viridis_d(guide = FALSE) + -->
+
+<!--     scale_fill_viridis_d(guide = FALSE) -->
+
+<!-- ``` -->
+
+<!-- </p> -->
+
+<!-- </details> -->
+
+<!-- ```{r, echo = FALSE, warning=FALSE, message=FALSE} -->
+
+<!-- fig4 -->
+
+<!-- ``` -->
 
 ### Task 3: Response Inhibition
 
@@ -279,7 +292,7 @@ fig5 <- df %>%
 
 </details>
 
-![](figures/unnamed-chunk-12-1.png)<!-- -->
+![](figures/unnamed-chunk-10-1.png)<!-- -->
 
 <details>
 
@@ -345,7 +358,7 @@ fig6 <- cowplot::plot_grid(
 
 </details>
 
-![](figures/unnamed-chunk-14-1.png)<!-- -->
+![](figures/unnamed-chunk-12-1.png)<!-- -->
 
 ### Task 4: Conflict Resolution
 
@@ -380,4 +393,4 @@ fig7 <- df %>%
 
 </details>
 
-![](figures/unnamed-chunk-16-1.png)<!-- -->
+![](figures/unnamed-chunk-14-1.png)<!-- -->

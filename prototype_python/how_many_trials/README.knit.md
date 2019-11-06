@@ -9,26 +9,24 @@ editor_options:
 ---
 
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-library(tidyverse)
 
-options(digits=2)
-
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  dpi=450,
-  fig.path = "figures/"
-)
-```
 
 # What is the Optimal Number of Trials
 
 
 <details><summary>Convenience functions (click to see the code)</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 library(tidyverse)
 library(easystats)
+## # Attaching packages (red = needs update)
+## <U+2714> insight     0.6.0        <U+2714> bayestestR  0.4.0     
+## <U+26A0> performance 0.3.0.9000   <U+2714> parameters  0.2.5     
+## <U+2714> see         0.2.1.9000   <U+2714> effectsize  0.0.1     
+## <U+2714> correlation 0.1.0        <U+2714> estimate    0.1.0     
+## <U+2714> report      0.1.0        
+## Restart the R-Session and update packages in red with 'easystats::easystats_update()'.
 library(cowplot)
 
 compute_cumulative <- function(data, fun = mean, col = "RT"){
@@ -79,7 +77,8 @@ inhibition_model <- function(data){
 ### Task 1: Simple Reaction Time
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ProcessingSpeed.csv", full.names = TRUE)){
   df <- rbind(df, cumulative_data(read.csv(path)))
@@ -114,16 +113,15 @@ fig1 <- cowplot::plot_grid(
 </p>
 </details>
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig1
-```
+![](figures/unnamed-chunk-4-1.png)<!-- -->
 
 
 
 ### Task 2: Response Selection
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ResponseSelection.csv", full.names = TRUE)){
   df <- rbind(df, cumulative_data(read.csv(path)))
@@ -158,14 +156,13 @@ fig2 <- cowplot::plot_grid(
 </p>
 </details>
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig2
-```
+![](figures/unnamed-chunk-6-1.png)<!-- -->
 
 ### Task 4: Conflict Resolution
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
   dat <- read.csv(path)
@@ -211,9 +208,7 @@ fig3 <- cowplot::plot_grid(
 </p>
 </details>
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig3
-```
+![](figures/unnamed-chunk-8-1.png)<!-- -->
 
 
 
@@ -248,7 +243,8 @@ fig3
 ### Task 3: Response Inhibition
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
   data <- read.csv(path)
@@ -268,13 +264,12 @@ fig5 <- df %>%
 ```
 </p>
 </details>
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig5
-```
+![](figures/unnamed-chunk-10-1.png)<!-- -->
 
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
   data <- read.csv(path)
@@ -329,15 +324,14 @@ fig6 <- cowplot::plot_grid(
 ```
 </p>
 </details>
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig6
-```
+![](figures/unnamed-chunk-12-1.png)<!-- -->
 
 
 ### Task 4: Conflict Resolution
 <details><summary>See code</summary>
 <p>
-```{r, echo = TRUE, warning=FALSE, message=FALSE}
+
+```r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
   dat <- read.csv(path)
@@ -359,6 +353,4 @@ fig7 <- df %>%
 ```
 </p>
 </details>
-```{r, echo = FALSE, warning=FALSE, message=FALSE}
-fig7
-```
+![](figures/unnamed-chunk-14-1.png)<!-- -->
