@@ -40,6 +40,23 @@ cumulative_data <- function(data){
          "Cumulative_Mean", "Cumulative_SD", "Cumulative_CI_high", "Cumulative_CI_low",
          "Change_Mean", "Change_SD")]
 }
+
+
+cumulative_errors <- function(data){
+  data$Error <- as.character(data$Response) != as.character(data$Stimulus_Side)
+  error_prob <- c()
+  for(i in 1:nrow(data)){
+    error_prob <- c(error_prob, sum(data$Error[1:i]) / i)
+  }
+  data$Error_Probability <- error_prob
+  data[c("Participant", "Task", "Trial_Order", "Error_Probability")]
+}
+
+
+inhibition_model <- function(data){
+  data$Error <- ifelse(as.character(data$Stop_Signal) %in% c("True", "TRUE") & data$Response %in% c("RIGHT", "LEFT"), TRUE, FALSE)
+  glm(Error ~ Stop_Signal_RT, data = data, family = "binomial")
+}
 ```
 
 </p>
@@ -152,7 +169,7 @@ fig2 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ConflictResolution_2.csv", full.names = TRUE)){
+for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
   dat <- read.csv(path)
   cong <- cumulative_data(dat[dat$Congruence == "CONGRUENT", ])
   cong$Conflict <- FALSE
@@ -199,3 +216,168 @@ fig3 <- cowplot::plot_grid(
 </details>
 
 ![](figures/unnamed-chunk-8-1.png)<!-- -->
+
+## Errors
+
+### Task 2: Response Selection
+
+<details>
+
+<summary>See code</summary>
+
+<p>
+
+``` r
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ResponseSelection.csv", full.names = TRUE)){
+  df <- rbind(df, cumulative_errors(read.csv(path)))
+}
+
+fig4 <- df %>%
+    ggplot(aes(x = Trial_Order, y = Error_Probability)) +
+    geom_vline(xintercept = 60, linetype = "dotted") +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE)
+```
+
+</p>
+
+</details>
+
+![](figures/unnamed-chunk-10-1.png)<!-- -->
+
+### Task 3: Response Inhibition
+
+<details>
+
+<summary>See code</summary>
+
+<p>
+
+``` r
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+  data <- read.csv(path)
+  predicted <- estimate_link(inhibition_model(data))
+  predicted$Participant <- unique(data$Participant)
+  df <- rbind(df, predicted)
+}
+
+
+fig5 <- df %>%
+    ggplot(aes(x = Stop_Signal_RT, y = Predicted)) +
+    geom_ribbon(aes(ymin = CI_low, ymax = CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) 
+```
+
+</p>
+
+</details>
+
+![](figures/unnamed-chunk-12-1.png)<!-- -->
+
+<details>
+
+<summary>See code</summary>
+
+<p>
+
+``` r
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+  data <- read.csv(path)
+  for(i in 1:nrow(data)){
+    dat <- tryCatch({
+        model <- inhibition_model(data[1:i, ])
+        params <- insight::get_parameters(model)$estimate
+        se <- standard_error(model)
+        data.frame(Intercept = params[1],
+                   Intercept_CI_high = params[1] + se$SE[1] * 1.96,
+                   Intercept_CI_low = params[1] - se$SE[1] * 1.96,
+                   Slope = params[2],
+                   Slope_CI_high = params[2] + se$SE[2] * 1.96,
+                   Slope_CI_low = params[2] - se$SE[2] * 1.96)
+    }, error = function(e) {
+        data.frame(Intercept = NA,
+                   Intercept_CI_high = NA,
+                   Intercept_CI_low = NA,
+                   Slope = NA,
+                   Slope_CI_high = NA,
+                   Slope_CI_low = NA)
+    })
+    
+    dat$Participant <- unique(data$Participant)
+    dat$Trial_Order <- i
+    df <- rbind(df, dat)
+  }
+}
+
+
+
+fig6 <- cowplot::plot_grid(
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Intercept)) +
+    geom_hline(yintercept = 0) +
+    # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Intercept_CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    coord_cartesian(ylim = c(-7, 3)),
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Slope)) +
+    geom_hline(yintercept = 0) +
+    # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Slope_CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    coord_cartesian(ylim = c(-0.07, 0.07))
+)
+```
+
+</p>
+
+</details>
+
+![](figures/unnamed-chunk-14-1.png)<!-- -->
+
+### Task 4: Conflict Resolution
+
+<details>
+
+<summary>See code</summary>
+
+<p>
+
+``` r
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
+  dat <- read.csv(path)
+  cong <- cumulative_errors(dat[dat$Congruence == "CONGRUENT", ])
+  cong$Conflict <- FALSE
+  incong <- cumulative_errors(dat[dat$Congruence != "CONGRUENT", ])
+  incong$Conflict <- TRUE
+  df <- rbind(df, rbind(cong, incong))
+}
+
+fig7 <- df %>%
+    ggplot(aes(x = Trial_Order, y = Error_Probability)) +
+    geom_vline(xintercept = 120, linetype = "dotted") +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    facet_grid(~Conflict, labeller = "label_both")
+```
+
+</p>
+
+</details>
+
+![](figures/unnamed-chunk-16-1.png)<!-- -->

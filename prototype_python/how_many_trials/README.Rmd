@@ -272,7 +272,66 @@ fig5 <- df %>%
 fig5
 ```
 
+<details><summary>See code</summary>
+<p>
+```{r, echo = TRUE, warning=FALSE, message=FALSE}
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+  data <- read.csv(path)
+  for(i in 1:nrow(data)){
+    dat <- tryCatch({
+        model <- inhibition_model(data[1:i, ])
+        params <- insight::get_parameters(model)$estimate
+        se <- standard_error(model)
+        data.frame(Intercept = params[1],
+                   Intercept_CI_high = params[1] + se$SE[1] * 1.96,
+                   Intercept_CI_low = params[1] - se$SE[1] * 1.96,
+                   Slope = params[2],
+                   Slope_CI_high = params[2] + se$SE[2] * 1.96,
+                   Slope_CI_low = params[2] - se$SE[2] * 1.96)
+    }, error = function(e) {
+        data.frame(Intercept = NA,
+                   Intercept_CI_high = NA,
+                   Intercept_CI_low = NA,
+                   Slope = NA,
+                   Slope_CI_high = NA,
+                   Slope_CI_low = NA)
+    })
+    
+    dat$Participant <- unique(data$Participant)
+    dat$Trial_Order <- i
+    df <- rbind(df, dat)
+  }
+}
 
+
+
+fig6 <- cowplot::plot_grid(
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Intercept)) +
+    geom_hline(yintercept = 0) +
+    # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Intercept_CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    coord_cartesian(ylim = c(-7, 3)),
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Slope)) +
+    geom_hline(yintercept = 0) +
+    # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Slope_CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    coord_cartesian(ylim = c(-0.07, 0.07))
+)
+```
+</p>
+</details>
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+fig6
+```
 
 
 ### Task 4: Conflict Resolution
