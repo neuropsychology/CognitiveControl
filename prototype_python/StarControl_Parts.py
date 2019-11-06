@@ -76,7 +76,7 @@ def response_selection(n_trials=100, testmode = False):
         n.write("When suddenly...", color="white", y=5, size=1.2)
         n.refresh()
         n.time.wait(2000)
-        n.write("...your ship engine EXPLODES!", color="white", y=3.5, size=1.2)
+        n.write("...your ship engine EXPLODES!", color="white", y=1.5, size=1.2)
         n.refresh()
         n.time.wait(2500)
         n.newpage("white")
@@ -84,7 +84,7 @@ def response_selection(n_trials=100, testmode = False):
         n.write("You wake up in a hospital.", color="black", y=5, size=1.2)
         n.refresh()
         n.time.wait(1500)
-        n.write("One year has passed since the accident.", color="black", y=1, size=1.2)
+        n.write("One year has passed since the accident.", color="black", y=1.5, size=1.2)
         n.refresh()
         n.time.wait(2000)
         display_instructions("""Things have changed, since. You find your dear old ship, and its famous auto-aiming cannons, damaged in a dump.\n\nYou have no choice but to start again, in this new can box they call a ship...\n\nNo more auto-aiming cannons.""", text_end="Press SPACE to continue.", background = (24,4,64))
@@ -294,7 +294,6 @@ def conflict_resolution(n_trials=200):
     for trial in range(n_trials):
         data[trial].update(ITI(data[trial]["ITI"]))
         data[trial].update(prime(side=data[trial]["Stimulus_Side"], conflict=data[trial]["Conflict"], duration = 0))
-
         data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], allies = True))
         data[trial]["Trial_Order"] = trial + 1
 
