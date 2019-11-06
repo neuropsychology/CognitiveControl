@@ -5,16 +5,17 @@ import datetime
 
 import neuropsydia as n
 
-from FrontalControl_Utils import *
-from FrontalControl_Core import *
-from FrontalControl_Parts import *
-from FrontalControl_Statistics import *
+from StarControl_Utils import *
+from StarControl_Core import *
+from StarControl_Parts import *
+from StarControl_Statistics import *
 
 
 # Parameters
 testmode = False
+staircase = False
 #n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
-n_trials = {"P1": 10, "P2": 10, "P3": 10, "P4": 10}
+n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
 
 # Initialization
 n.start()
@@ -51,13 +52,13 @@ save_data(df_ResponseSelection, start_time, participant, task = "Response_Select
 
 # Part 3
 # -----------------------------------------------------------------------------
-results["SSRT_Min"] = 16.66667
+results["SSRT_Min"] = 0
 #results["SSRT_Max"] = convert_to_frames(df_ResponseSelection["RT"].quantile(0.10))
 results["SSRT_Max"] = convert_to_frames(df_ResponseSelection["RT"].median())
 
 
 start_time = datetime.datetime.now()
-df_ResponseInhibition, staircase = response_inhibition(n_trials=n_trials["P3"],
+df_ResponseInhibition = response_inhibition(n_trials=n_trials["P3"],
                                             min_SSRT=results["SSRT_Min"],
                                             max_SSRT=results["SSRT_Max"],
                                             testmode = testmode)

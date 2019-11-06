@@ -5,8 +5,8 @@ import pandas as pd
 import neurokit as nk
 import neuropsydia as n
 
-from FrontalControl_Core import *
-from FrontalControl_Utils import *
+from StarControl_Core import *
+from StarControl_Utils import *
 
 
 
@@ -81,14 +81,12 @@ def response_selection(n_trials=100, testmode = False):
         n.time.wait(2500)
         n.newpage("white")
         n.time.wait(1000)
-        n.newpage((24,4,64), auto_refresh=True)
-        n.time.wait(1000)
-        n.write("You wake up in a hospital.", color="white", y=5, size=1.2)
+        n.write("You wake up in a hospital.", color="black", y=5, size=1.2)
         n.refresh()
         n.time.wait(1500)
-        n.write("One year has passed since the accident.", color="white", y=3.5, size=1.2)
+        n.write("One year has passed since the accident.", color="black", y=1, size=1.2)
         n.refresh()
-        n.time.wait(3000)
+        n.time.wait(2000)
         display_instructions("""Things have changed, since. You find your dear old ship, and its famous auto-aiming cannons, damaged in a dump.\n\nYou have no choice but to start again, in this new can box they call a ship...\n\nNo more auto-aiming cannons.""", text_end="Press SPACE to continue.", background = (24,4,64))
         display_instructions("""But you're not going to give up! You're going to show everyone that you are the fastest pilot for a reason...\n\nEven if that means manually aiming at the targets!""", text_end="Press SPACE to continue.", background = (24,4,64))
         display_instructions("""Okay, rookie, get ready for action.\n\nPress LEFT or RIGHT depending on where the enemy appears, and be as fast as possible!""")
@@ -109,20 +107,18 @@ def response_selection(n_trials=100, testmode = False):
 
 # Part 3
 # -----------------------------------------------------------------------------
-def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667, testmode = False):
+def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667, staircase = False, testmode = False):
 
     def generate_data(n_trials, min_SSRT=0, max_SSRT=300, frame= 16.66667, adaptive=False):
         data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
                 "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
 
         # SSRT
-        ss = np.array(randomize_and_repeat_without_repetition([False, False, False, True], int(n_trials/4)) + [False] * int(n_trials-int(n_trials/4)*4))
+        ss = np.array(randomize_and_repeat([False, False, True], int(n_trials/3)) + [False] * int(n_trials-int(n_trials/3)*3))
         data["Stop_Signal"] = ss
         data["Stop_Signal_RT"] = np.array([np.nan] * int(n_trials))
 
         if adaptive is False:
-#            ssrt = generate_interval_frames(min_SSRT, max_SSRT, int(sum(ss)-int(sum(ss)/4)))
-#            data["Stop_Signal_RT"][ss == True] = randomize_without_repetition([0] * int(sum(ss)/3) + list(ssrt))
             ssrt = generate_interval_frames(min_SSRT, max_SSRT, int(sum(ss)))
             data["Stop_Signal_RT"][ss == True] = randomize_without_repetition(list(ssrt))
         else:
@@ -156,43 +152,47 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
     display_instructions("""Bad news, rookie, it seems like the rebels have upgraded some of their ships!\n\nIf we do not manage to shoot as SOON as the ennemy appears, they'll have time to activate counter-measures that will return our bullets and damage our ship.""", text_end="Press SPACE to continue.")
     display_instructions("""Shoot the incoming ships as FAST as possible, before a RED CROSS appears.\n\nDo not shoot at the RED CROSS, or it will harm us too!""")
 
-    staircase = nk.staircase(signal = generate_interval_frames(0, max_SSRT, int(max_SSRT/frame)),
+    # Without staircase
+    if staircase is True:
+        staircase = nk.staircase(signal = generate_interval_frames(0, max_SSRT, int(max_SSRT/frame)),
                              treshold = 0.5,
                              burn=0)
-
-    # Without staircase
-    data = generate_data(int(n_trials/2), min_SSRT, max_SSRT, frame)
+        data = generate_data(int(n_trials/2), min_SSRT, max_SSRT, frame)
+    else:
+        data = generate_data(int(n_trials), min_SSRT, max_SSRT, frame)
     for trial in range(0, int(n_trials/2)):
         data[trial].update(ITI(data[trial]["ITI"]))
         data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"]))
-        if data[trial]["Stop_Signal"] is True:
-            if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
-                if data[trial]["Response"] == "Time_Max_Exceeded":
-                    staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
-                else:
-                    staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
+        if staircase is True:
+            if data[trial]["Stop_Signal"] is True:
+                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
+                    if data[trial]["Response"] == "Time_Max_Exceeded":
+                        staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
+                    else:
+                        staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
         data[trial]["Trial_Order"] = trial + 1
 
     # With staircase
-    data_staircase = generate_data(int(n_trials/2), min_SSRT, max_SSRT, adaptive=True)
-    for i in list(data_staircase.keys()): # Replace keys
-        data_staircase[i + int(n_trials/2)] = data_staircase.pop(i)
-    data.update(data_staircase)
-    for trial in range(int(n_trials/2), n_trials):
-        data[trial].update(ITI(data[trial]["ITI"]))
-        if data[trial]["Stop_Signal_RT"] == -1:
-            data[trial]["Stop_Signal_RT"] = staircase.predict_next_value()
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"]))
-        if data[trial]["Stop_Signal"] is True:
-            if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
-                if data[trial]["Response"] == "Time_Max_Exceeded":
-                    staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
-                else:
-                    staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
-        data[trial]["Trial_Order"] = trial + 1
+    if staircase is True:
+        data_staircase = generate_data(int(n_trials/2), min_SSRT, max_SSRT, adaptive=True)
+        for i in list(data_staircase.keys()): # Replace keys
+            data_staircase[i + int(n_trials/2)] = data_staircase.pop(i)
+        data.update(data_staircase)
+        for trial in range(int(n_trials/2), n_trials):
+            data[trial].update(ITI(data[trial]["ITI"]))
+            if data[trial]["Stop_Signal_RT"] == -1:
+                data[trial]["Stop_Signal_RT"] = staircase.predict_next_value()
+            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"]))
+            if data[trial]["Stop_Signal"] is True:
+                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
+                    if data[trial]["Response"] == "Time_Max_Exceeded":
+                        staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
+                    else:
+                        staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
+            data[trial]["Trial_Order"] = trial + 1
 
     data = pd.DataFrame.from_dict(data, orient="index")
-    return(data, staircase)
+    return(data)
 
 
 
@@ -274,7 +274,7 @@ def conflict_resolution(n_trials=200):
     display_instructions("""Shoot LEFT and RIGHT according to the radar arrows that will appear in the centre.\n\nRemember to be as fast as possible!""", text_end ="Press SPACE to continue.")
     for practice_trial in range(7):
         ITI([1000, 1250, 1000, 1500, 1000, 1250, 1500][practice_trial])
-        prime(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], congruence="CONGRUENT", duration = 0)
+        prime(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], conflict=False, duration = 0)
         display_stimulus(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], allies = True)
 
 

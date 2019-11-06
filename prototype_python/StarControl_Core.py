@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import neuropsydia as n
 
-from FrontalControl_Utils import *
+from StarControl_Utils import *
 
 
 # =============================================================================
@@ -58,7 +58,7 @@ def display_fire(side="RIGHT"):
     elif side == "LEFT":
         n.image("assets/fire.png", x=-0.65, y=-7.75)
 
-def display_instructions(text="text instructions", text_end="Shoot to start the mission.", background = (74,20,140)):
+def display_instructions(text="text instructions", text_end="Shoot to start the mission.", background = (13,71,161)):
     n.newpage(background, auto_refresh=False)
     n.write("\n\n\n" + text, color="white", long_text = True)
     n.write(text_end, color="white", y=-9)
