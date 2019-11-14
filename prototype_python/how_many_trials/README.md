@@ -15,13 +15,13 @@ participants).
 ``` r
 library(tidyverse)
 library(easystats)
-## # Attaching packages (red = needs update)
-## <U+2714> insight     0.6.0        <U+2714> bayestestR  0.4.0     
-## <U+26A0> performance 0.3.0.9000   <U+2714> parameters  0.2.5     
-## <U+2714> see         0.2.1.9000   <U+2714> effectsize  0.0.1     
-## <U+2714> correlation 0.1.0        <U+2714> estimate    0.1.0     
-## <U+2714> report      0.1.0        
-## Restart the R-Session and update packages in red with 'easystats::easystats_update()'.
+## # Attaching packages(red = needs update)
+## <U+2714> insight     0.6.0.1      <U+2714> bayestestR  0.4.0.1   
+## <U+26A0> performance 0.3.0.9000   <U+2714> parameters  0.2.5.1   
+## <U+2714> see         0.2.1.9000   <U+2714> correlation 0.1.0     
+## <U+2714> estimate    0.1.0        <U+2714> report      0.1.0     
+## 
+## Update packages in red with 'easystats_update()'.
 library(cowplot)
 
 compute_cumulative <- function(data, fun = mean, col = "RT"){
@@ -61,6 +61,21 @@ cumulative_errors <- function(data){
 inhibition_model <- function(data){
   data$Error <- ifelse(as.character(data$Stop_Signal) %in% c("True", "TRUE") & data$Response %in% c("RIGHT", "LEFT"), TRUE, FALSE)
   glm(Error ~ Stop_Signal_RT, data = data, family = "binomial")
+}
+
+
+fix_old_subjects <- function(data){
+  if("Stop_Signal" %in% names(data)){
+    if(TRUE %in% data$Stop_Signal){ 
+    data$Stop_Signal <- ifelse(data$Stop_Signal == TRUE, "True", "False")
+    }
+  }
+  if(any(c("Conflict", "Congruence") %in% names(data))){
+    if(!"Conflict" %in% names(data)){  
+    data$Conflict <- ifelse(data$Congruence == "CONGRUENT", "False", "True")
+    }
+  }
+  data
 }
 ```
 
@@ -171,6 +186,57 @@ fig2 <- cowplot::plot_grid(
 
 ![](figures/unnamed-chunk-6-1.png)<!-- -->
 
+### Task 3: Response Inhibition
+
+<details>
+
+<summary>See code</summary>
+
+<p>
+
+``` r
+df <- data.frame()
+for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+  dat <- fix_old_subjects(read.csv(path))
+  df <- rbind(df, cumulative_data(dat[dat$Stop_Signal == "False", ]))
+}
+
+fig3 <- cowplot::plot_grid(
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
+    geom_vline(xintercept = 60, linetype = "dotted") +
+    geom_ribbon(aes(ymin = Cumulative_CI_low, ymax = Cumulative_CI_high, fill = Participant), alpha = 0.1) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    scale_fill_viridis_d(guide = FALSE) +
+    xlab("Number of trials"),
+  cowplot::plot_grid(df %>%
+    ggplot(aes(x = Trial_Order, y = Change_Mean)) +
+    geom_vline(xintercept = 60, linetype = "dotted") +
+    geom_hline(yintercept = 0) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials"),
+  df %>%
+    ggplot(aes(x = Trial_Order, y = Change_SD)) +
+    geom_vline(xintercept = 60, linetype = "dotted") +
+    geom_hline(yintercept = 0) +
+    geom_line(aes(color = Participant), size = 1) +
+    theme_modern() +
+    scale_color_viridis_d(guide = FALSE) +
+    xlab("Number of trials")),
+  nrow = 2
+)
+```
+
+</p>
+
+</details>
+
+![](figures/unnamed-chunk-8-1.png)<!-- -->
+
 ### Task 4: Conflict Resolution
 
 <details>
@@ -182,15 +248,15 @@ fig2 <- cowplot::plot_grid(
 ``` r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
-  dat <- read.csv(path)
-  cong <- cumulative_data(dat[dat$Congruence == "CONGRUENT", ])
-  cong$Conflict <- FALSE
-  incong <- cumulative_data(dat[dat$Congruence != "CONGRUENT", ])
-  incong$Conflict <- TRUE
+  dat <- fix_old_subjects(read.csv(path))
+  cong <- cumulative_data(dat[dat$Conflict == "False", ])
+  cong$Conflict <- "False"
+  incong <- cumulative_data(dat[dat$Conflict == "True", ])
+  incong$Conflict <- "True"
   df <- rbind(df, rbind(cong, incong))
 }
 
-fig3 <- cowplot::plot_grid(
+fig4 <- cowplot::plot_grid(
   df %>%
     ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
     geom_vline(xintercept = 120, linetype = "dotted") +
@@ -230,7 +296,7 @@ fig3 <- cowplot::plot_grid(
 
 </details>
 
-![](figures/unnamed-chunk-8-1.png)<!-- -->
+![](figures/unnamed-chunk-10-1.png)<!-- -->
 
 ## Errors
 
@@ -287,8 +353,8 @@ fig3 <- cowplot::plot_grid(
 ``` r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
-  data <- read.csv(path)
-  predicted <- estimate_link(inhibition_model(data))
+  data <- fix_old_subjects(read.csv(path))
+  predicted <- estimate::estimate_link(inhibition_model(data))
   predicted$Participant <- unique(data$Participant)
   df <- rbind(df, predicted)
 }
@@ -309,7 +375,7 @@ fig5 <- df %>%
 
 </details>
 
-![](figures/unnamed-chunk-10-1.png)<!-- -->
+![](figures/unnamed-chunk-12-1.png)<!-- -->
 
 <details>
 
@@ -320,11 +386,11 @@ fig5 <- df %>%
 ``` r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
-  data <- read.csv(path)
+  data <- fix_old_subjects(read.csv(path))
   for(i in 1:nrow(data)){
     dat <- tryCatch({
         model <- inhibition_model(data[1:i, ])
-        params <- insight::get_parameters(model)$estimate
+        params <- insight::get_parameters(model)$Estimate
         se <- standard_error(model)
         data.frame(Intercept = params[1],
                    Intercept_CI_high = params[1] + se$SE[1] * 1.96,
@@ -377,7 +443,7 @@ fig6 <- cowplot::plot_grid(
 
 </details>
 
-![](figures/unnamed-chunk-12-1.png)<!-- -->
+![](figures/unnamed-chunk-14-1.png)<!-- -->
 
 ### Task 4: Conflict Resolution
 
@@ -390,10 +456,10 @@ fig6 <- cowplot::plot_grid(
 ``` r
 df <- data.frame()
 for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
-  dat <- read.csv(path)
-  cong <- cumulative_errors(dat[dat$Congruence == "CONGRUENT", ])
+  dat <- fix_old_subjects(read.csv(path))
+  cong <- cumulative_errors(dat[dat$Conflict == "False", ])
   cong$Conflict <- FALSE
-  incong <- cumulative_errors(dat[dat$Congruence != "CONGRUENT", ])
+  incong <- cumulative_errors(dat[dat$Conflict == "True", ])
   incong$Conflict <- TRUE
   df <- rbind(df, rbind(cong, incong))
 }
@@ -413,4 +479,4 @@ fig7 <- df %>%
 
 </details>
 
-![](figures/unnamed-chunk-14-1.png)<!-- -->
+![](figures/unnamed-chunk-16-1.png)<!-- -->
