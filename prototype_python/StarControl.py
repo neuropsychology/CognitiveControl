@@ -14,8 +14,8 @@ from StarControl_Statistics import *
 # Parameters
 testmode = False
 staircase = False
-#n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
-n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
+n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
+#n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
 
 # Initialization
 n.start()
