@@ -1,5 +1,7 @@
 # The Cognitive Control Game 1.0
 
+![](CoCon.gif)
+
 ## Aim
 
 **Cognitive Control is a critical aspect of our adaptive nature** and has been shown to be strongly related to many positive outcomes, such as **wellbeing**, **mental health**, **emotion regulation** and **goals achievement**. However, there is a general agreement that it is not a **unitary process**, but an ability emerging from the integration of several **distinctive** and **independent** mechanisms.
