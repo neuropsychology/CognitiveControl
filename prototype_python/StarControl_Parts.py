@@ -44,11 +44,12 @@ def processing_speed(n_trials=60, testmode = False):
                 )
         data[trial]["Trial_Order"] = trial + 1
 
-    # First
-    ITI(1000)
-    display_explosion(side = "CENTRE")
-    n.refresh()
-    n.time.wait(1000)
+    # Explosion!
+    if testmode is False:
+        ITI(1000)
+        display_explosion(side = "CENTRE")
+        n.refresh()
+        n.time.wait(800)
 
     data = pd.DataFrame.from_dict(data, orient="index")
     return(data)
@@ -131,28 +132,26 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
 
 
     # First
-    ITI(2000)
-    display_enemy()
-    n.refresh()
-    n.time.wait(150)
-    display_enemy(stop=True)
-    n.refresh()
     if testmode is False:
-        response, RT = n.response(allow=["RIGHT", "LEFT"], time_max = 1500)
+        ITI(2000)
+        display_enemy()
+        n.refresh()
+        n.time.wait(150)
+        display_enemy(stop=True)
+        n.refresh()
+        n.response(allow=["RIGHT", "LEFT"], time_max = 1500)
         n.time.wait(1500)
-    else:
-        response, RT = "RIGHT", np.random.normal(750, 250)
 
 
-    # Instructions
-    n.newpage((24,4,64), auto_refresh=False)
-    n.write("Wait! What's that?!", color="white", y=5, size=1.2)
-    n.refresh()
-    n.time.wait(2000)
-    display_instructions("""Bad news, rookie, it seems like the rebels have upgraded some of their ships!\n\nIf we do not manage to shoot as SOON as the ennemy appears, they'll have time to activate counter-measures that will return our bullets and damage our ship.""", text_end="Press SPACE to continue.")
-    display_instructions("""Shoot the incoming ships as FAST as possible, before a RED CROSS appears.\n\nDo not shoot at the RED CROSS, or it will harm us too!""")
+        # Instructions
+        n.newpage((24,4,64), auto_refresh=False)
+        n.write("Wait! What's that?!", color="white", y=5, size=1.2)
+        n.refresh()
+        n.time.wait(2000)
+        display_instructions("""Bad news, rookie, it seems like the rebels have upgraded some of their ships!\n\nIf we do not manage to shoot as SOON as the ennemy appears, they'll have time to activate counter-measures that will return our bullets and damage our ship.""", text_end="Press SPACE to continue.")
+        display_instructions("""Shoot the incoming ships as FAST as possible, before a RED CROSS appears.\n\nDo not shoot at the RED CROSS, or it will harm us too!""")
 
-    # Without staircase
+    # Generate data
     if staircase is True:
         staircase = nk.staircase(signal = generate_interval_frames(0, max_SSRT, int(max_SSRT/frame)),
                              treshold = 0.5,
@@ -160,36 +159,45 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
         data = generate_data(int(n_trials/2), min_SSRT, max_SSRT, frame)
     else:
         data = generate_data(int(n_trials), min_SSRT, max_SSRT, frame)
-    for trial in range(0, int(n_trials/2)):
-        data[trial].update(ITI(data[trial]["ITI"]))
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"]))
-        if staircase is True:
-            if data[trial]["Stop_Signal"] is True:
-                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
-                    if data[trial]["Response"] == "Time_Max_Exceeded":
-                        staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
-                    else:
-                        staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
-        data[trial]["Trial_Order"] = trial + 1
 
-    # With staircase
-    if staircase is True:
-        data_staircase = generate_data(int(n_trials/2), min_SSRT, max_SSRT, adaptive=True)
-        for i in list(data_staircase.keys()): # Replace keys
-            data_staircase[i + int(n_trials/2)] = data_staircase.pop(i)
-        data.update(data_staircase)
-        for trial in range(int(n_trials/2), n_trials):
-            data[trial].update(ITI(data[trial]["ITI"]))
-            if data[trial]["Stop_Signal_RT"] == -1:
-                data[trial]["Stop_Signal_RT"] = staircase.predict_next_value()
-            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"]))
-            if data[trial]["Stop_Signal"] is True:
-                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
-                    if data[trial]["Response"] == "Time_Max_Exceeded":
-                        staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
-                    else:
-                        staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
+    # Run trials
+    if staircase is False:
+        for trial in range(0, n_trials):
+            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
             data[trial]["Trial_Order"] = trial + 1
+
+#    # With staircase
+#    else:
+#        for trial in range(0, int(n_trials/2)):
+#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
+#            if staircase is True:
+#                if data[trial]["Stop_Signal"] is True:
+#                    if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
+#                        if data[trial]["Response"] == "Time_Max_Exceeded":
+#                            staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
+#                        else:
+#                            staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
+#            data[trial]["Trial_Order"] = trial + 1
+#
+#        data_staircase = generate_data(int(n_trials/2), min_SSRT, max_SSRT, adaptive=True)
+#        for i in list(data_staircase.keys()): # Replace keys
+#            data_staircase[i + int(n_trials/2)] = data_staircase.pop(i)
+#        data.update(data_staircase)
+#        for trial in range(int(n_trials/2), n_trials):
+#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+#            if data[trial]["Stop_Signal_RT"] == -1:
+#                data[trial]["Stop_Signal_RT"] = staircase.predict_next_value()
+#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
+#            if data[trial]["Stop_Signal"] is True:
+#                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
+#                    if data[trial]["Response"] == "Time_Max_Exceeded":
+#                        staircase.add_response(response=0, value=data[trial]["Stop_Signal_RT"])
+#                    else:
+#                        staircase.add_response(response=1, value=data[trial]["Stop_Signal_RT"])
+#            data[trial]["Trial_Order"] = trial + 1
+
 
     data = pd.DataFrame.from_dict(data, orient="index")
     return(data)
@@ -232,50 +240,21 @@ def attention_priming(n_trials=20):
     return(data)
 
 
-# Part 5
-# -----------------------------------------------------------------------------
-#def conflict_resolution(n_trials=20):
-#
-#    # Data creation
-#    data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
-#            "ITI": list(generate_interval_frames(500, 1500, n_trials/2))*2}
-#    data["Priming_Interval"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
-#    data["Congruence"] = randomize_and_repeat(generate_interval_frames(50, 1000, n_trials/2), 2)
-#    data = pd.DataFrame.from_dict(data)
-#    data = data.sample(len(data)).reset_index(drop=True)
-#    data = data.to_dict(orient="index")
-#
-#    # Instructions
-#    n.newpage((74,20,140), auto_refresh=False)
-#    n.write("Bad news! We have been informed the ennemies", color="white", y=5, size=1.2)
-#    n.refresh()
-#    n.write("have managed to hack our radars.", color="white", y=3.5, size=1.2)
-#    n.refresh()
-#    n.time.wait(5000)
-#    display_instructions("""This means from now on, you can only trust your central radar (the central arrow). Be on your toes and destroy those incoming ships as FAST as you can.""")
-#
-#    for trial in range(n_trials):
-#        data[trial].update(ITI(data[trial]["ITI"]))
-#        data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"], congruence = "INCONGRUENT"))
-#        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"]))
-#        data[trial]["Trial_Order"] = trial + 1
-#
-#    data = pd.DataFrame.from_dict(data, orient="index")
-#    return(data)
 
 
 # Part 6
 # -----------------------------------------------------------------------------
-def conflict_resolution(n_trials=200):
+def conflict_resolution(n_trials=200, testmode = False):
 
     # Congruent practice
     # Instructions
-    display_instructions("""Impressive job, pilot!\n\nWe are winning this war! But the rebels are smart. This time, they have disguised themselves as CIVILIANS.\n\nThankfully, our engineers have developed a radar that will point toward the enemy ship.""", text_end ="Press SPACE to continue.")
-    display_instructions("""Shoot LEFT and RIGHT according to the radar arrows that will appear in the centre.\n\nRemember to be as fast as possible!""", text_end ="Press SPACE to continue.")
-    for practice_trial in range(7):
-        ITI([1000, 1250, 1000, 1500, 1000, 1250, 1500][practice_trial])
-        prime(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], conflict=False, duration = 0)
-        display_stimulus(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], allies = True)
+    if testmode is False:
+        display_instructions("""Impressive job, pilot!\n\nWe are winning this war! But the rebels are smart. This time, they have disguised themselves as CIVILIANS.\n\nThankfully, our engineers have developed a radar that will point toward the enemy ship.""", text_end ="Press SPACE to continue.")
+        display_instructions("""Shoot LEFT and RIGHT according to the radar arrows that will appear in the centre.\n\nRemember to be as fast as possible!""", text_end ="Press SPACE to continue.")
+        for practice_trial in range(7):
+            ITI([1000, 1250, 1000, 1500, 1000, 1250, 1500][practice_trial], testmode = testmode)
+            prime(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], conflict=False, duration = 0, testmode = testmode)
+            display_stimulus(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], allies = True, testmode = testmode)
 
 
 
@@ -288,13 +267,14 @@ def conflict_resolution(n_trials=200):
     data = data.to_dict(orient="index")
 
     # Instructions
-    display_instructions("""You're doing great!\n\nUnfortunately, it seems that they found a way a way of hacking our lateral radar antennas. You can only trust and rely on the CENTRAL arrow to know the direction to shoot at.""", text_end ="Press SPACE to continue.")
-    display_instructions("""Shoot LEFT and RIGHT according to the CENTRAL radar arrow.\n\nRemember to be as fast as possible!""")
+    if testmode is False:
+        display_instructions("""You're doing great!\n\nUnfortunately, it seems that they found a way a way of hacking our lateral radar antennas. You can only trust and rely on the CENTRAL arrow to know the direction to shoot at.""", text_end ="Press SPACE to continue.")
+        display_instructions("""Shoot LEFT and RIGHT according to the CENTRAL radar arrow.\n\nRemember to be as fast as possible!""")
 
     for trial in range(n_trials):
-        data[trial].update(ITI(data[trial]["ITI"]))
-        data[trial].update(prime(side=data[trial]["Stimulus_Side"], conflict=data[trial]["Conflict"], duration = 0))
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], allies = True))
+        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+        data[trial].update(prime(side=data[trial]["Stimulus_Side"], conflict=data[trial]["Conflict"], duration = 0, testmode = testmode))
+        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], allies = True, testmode = testmode))
         data[trial]["Trial_Order"] = trial + 1
 
     data = pd.DataFrame.from_dict(data, orient="index")

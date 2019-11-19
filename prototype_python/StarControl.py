@@ -12,7 +12,7 @@ from StarControl_Statistics import *
 
 
 # Parameters
-testmode = False
+testmode = True
 staircase = False
 n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
 #n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
@@ -23,9 +23,12 @@ t0 = datetime.datetime.now()
 results = {}
 
 # Identification
-n.newpage((74,20,140))
-n.write("STAR CONTROL", y = 1.5, color = "white", size = 3)
-participant = n.ask("ID: ", x = -1, y = -3, color = "white", background = (74,20,140), size = 1.5)
+if testmode is True:
+    participant = "test"
+else:
+    n.newpage((74,20,140))
+    n.write("STAR CONTROL", y = 1.5, color = "white", size = 3)
+    participant = n.ask("ID: ", x = -1, y = -3, color = "white", background = (74,20,140), size = 1.5)
 
 # Create data folder
 path = './data/' + participant + "/"
@@ -69,7 +72,8 @@ save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhib
 # Part 4
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
-df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"])
+df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"],
+                                            testmode = testmode)
 save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + "P4_ConflictResolution")
 
 

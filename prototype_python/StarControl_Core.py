@@ -7,12 +7,6 @@ import neuropsydia as n
 from StarControl_Utils import *
 
 
-# =============================================================================
-# Parameters
-# =============================================================================
-testmode = False
-
-
 
 
 # =============================================================================
@@ -179,7 +173,7 @@ def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = 
             "Trial_Time_End": datetime.datetime.now()})
 
 
-def prime(side="RIGHT", duration=1000, conflict=False):
+def prime(side="RIGHT", duration=1000, conflict=False, testmode = False):
     display_background()
     display_ship()
     display_cue(side=side, conflict=conflict)
