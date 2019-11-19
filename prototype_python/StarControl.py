@@ -12,7 +12,7 @@ from StarControl_Statistics import *
 
 
 # Parameters
-testmode = True
+testmode = False
 staircase = False
 n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
 #n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
@@ -45,8 +45,8 @@ df_ProcessingSpeed = processing_speed(n_trials=n_trials["P1"], testmode = testmo
 save_data(df_ProcessingSpeed, start_time, participant, task = "Processing_Speed", path = path + "P1_ProcessingSpeed")
 
 
-## Part 2
-## -----------------------------------------------------------------------------
+# Part 2
+# -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
 df_ResponseSelection = response_selection(n_trials=n_trials["P2"], testmode = testmode)
 save_data(df_ResponseSelection, start_time, participant, task = "Response_Selection", path = path + "P2_ResponseSelection")
@@ -77,11 +77,11 @@ df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"],
 save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + "P4_ConflictResolution")
 
 
-# Part 5
-# -----------------------------------------------------------------------------
-#start_time = datetime.datetime.now()
-#df_AttentionPriming = attention_priming(n_trials=20)
-#save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + "P5_AttentionPriming")
+ Part 5
+ -----------------------------------------------------------------------------
+start_time = datetime.datetime.now()
+df_AttentionPriming = attention_priming(n_trials=20)
+save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + "P5_AttentionPriming")
 
 
 
