@@ -15,13 +15,11 @@ participants).
 ``` r
 library(tidyverse)
 library(easystats)
-## # Attaching packages(red = needs update)
-## <U+2714> insight     0.6.0.1      <U+2714> bayestestR  0.4.0.1   
-## <U+26A0> performance 0.3.0.9000   <U+2714> parameters  0.2.5.1   
+## # Attaching packages
+## <U+2714> insight     0.7.0        <U+2714> bayestestR  0.4.0.1   
+## <U+2714> performance 0.4.0.1      <U+2714> parameters  0.2.5.1   
 ## <U+2714> see         0.2.1.9000   <U+2714> correlation 0.1.0     
-## <U+2714> estimate    0.1.0        <U+2714> report      0.1.0     
-## 
-## Update packages in red with 'easystats_update()'.
+## <U+2714> estimate    0.1.0        <U+2714> report      0.1.0
 library(cowplot)
 
 compute_cumulative <- function(data, fun = mean, col = "RT"){
@@ -65,6 +63,9 @@ inhibition_model <- function(data){
 
 
 fix_old_subjects <- function(data){
+  if("Stop_Signal" %in% names(data) && data$Participant %in% paste0("S", 5:13)){
+    data <- data[!is.na(data$Trial_Order), ]
+  }
   if("Stop_Signal" %in% names(data)){
     if(TRUE %in% data$Stop_Signal){ 
     data$Stop_Signal <- ifelse(data$Stop_Signal == TRUE, "True", "False")
@@ -95,9 +96,14 @@ fix_old_subjects <- function(data){
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ProcessingSpeed.csv", full.names = TRUE)){
-  df <- rbind(df, cumulative_data(read.csv(path)))
+for(participant in list.files(path = "../data/pilot/")){
+  if(!participant %in% c("S7")){
+    for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ProcessingSpeed.csv", full.names = TRUE)){
+      df <- rbind(df, cumulative_data(read.csv(path)))
+    }
+  }
 }
+
 
 fig1 <- cowplot::plot_grid(
   df %>%
@@ -146,8 +152,10 @@ fig1 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ResponseSelection.csv", full.names = TRUE)){
-  df <- rbind(df, cumulative_data(read.csv(path)))
+for(participant in list.files(path = "../data/pilot/")){
+  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseSelection.csv", full.names = TRUE)){
+    df <- rbind(df, cumulative_data(read.csv(path)))
+  }
 }
 
 fig2 <- cowplot::plot_grid(
@@ -196,9 +204,11 @@ fig2 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
-  dat <- fix_old_subjects(read.csv(path))
-  df <- rbind(df, cumulative_data(dat[dat$Stop_Signal == "False", ]))
+for(participant in list.files(path = "../data/pilot/")){
+  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+    dat <- fix_old_subjects(read.csv(path))
+    df <- rbind(df, cumulative_data(dat[dat$Stop_Signal == "False", ]))
+  }
 }
 
 fig3 <- cowplot::plot_grid(
@@ -247,13 +257,17 @@ fig3 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
-  dat <- fix_old_subjects(read.csv(path))
-  cong <- cumulative_data(dat[dat$Conflict == "False", ])
-  cong$Conflict <- "False"
-  incong <- cumulative_data(dat[dat$Conflict == "True", ])
-  incong$Conflict <- "True"
-  df <- rbind(df, rbind(cong, incong))
+for(participant in list.files(path = "../data/pilot/")){
+  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ConflictResolution.csv", full.names = TRUE)){
+    if(!participant %in% c("S11")){
+      dat <- fix_old_subjects(read.csv(path))
+      cong <- cumulative_data(dat[dat$Conflict == "False", ])
+      cong$Conflict <- "False"
+      incong <- cumulative_data(dat[dat$Conflict == "True", ])
+      incong$Conflict <- "True"
+      df <- rbind(df, rbind(cong, incong))
+    }
+  }
 }
 
 fig4 <- cowplot::plot_grid(
@@ -352,11 +366,13 @@ fig4 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
-  data <- fix_old_subjects(read.csv(path))
-  predicted <- estimate::estimate_link(inhibition_model(data))
-  predicted$Participant <- unique(data$Participant)
-  df <- rbind(df, predicted)
+for(participant in list.files(path = "../data/pilot/")){
+  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+    data <- fix_old_subjects(read.csv(path))
+    predicted <- estimate::estimate_link(inhibition_model(data))
+    predicted$Participant <- unique(data$Participant)
+    df <- rbind(df, predicted)
+  }
 }
 
 
@@ -385,31 +401,33 @@ fig5 <- df %>%
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
-  data <- fix_old_subjects(read.csv(path))
-  for(i in 1:nrow(data)){
-    dat <- tryCatch({
-        model <- inhibition_model(data[1:i, ])
-        params <- insight::get_parameters(model)$Estimate
-        se <- standard_error(model)
-        data.frame(Intercept = params[1],
-                   Intercept_CI_high = params[1] + se$SE[1] * 1.96,
-                   Intercept_CI_low = params[1] - se$SE[1] * 1.96,
-                   Slope = params[2],
-                   Slope_CI_high = params[2] + se$SE[2] * 1.96,
-                   Slope_CI_low = params[2] - se$SE[2] * 1.96)
-    }, error = function(e) {
-        data.frame(Intercept = NA,
-                   Intercept_CI_high = NA,
-                   Intercept_CI_low = NA,
-                   Slope = NA,
-                   Slope_CI_high = NA,
-                   Slope_CI_low = NA)
-    })
-    
-    dat$Participant <- unique(data$Participant)
-    dat$Trial_Order <- i
-    df <- rbind(df, dat)
+for(participant in list.files(path = "../data/pilot/")){
+  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+    data <- fix_old_subjects(read.csv(path))
+    for(i in 1:nrow(data)){
+      dat <- tryCatch({
+          model <- inhibition_model(data[1:i, ])
+          params <- insight::get_parameters(model)$Estimate
+          se <- standard_error(model)
+          data.frame(Intercept = params[1],
+                     Intercept_CI_high = params[1] + se$SE[1] * 1.96,
+                     Intercept_CI_low = params[1] - se$SE[1] * 1.96,
+                     Slope = params[2],
+                     Slope_CI_high = params[2] + se$SE[2] * 1.96,
+                     Slope_CI_low = params[2] - se$SE[2] * 1.96)
+      }, error = function(e) {
+          data.frame(Intercept = NA,
+                     Intercept_CI_high = NA,
+                     Intercept_CI_low = NA,
+                     Slope = NA,
+                     Slope_CI_high = NA,
+                     Slope_CI_low = NA)
+      })
+      
+      dat$Participant <- unique(data$Participant)
+      dat$Trial_Order <- i
+      df <- rbind(df, dat)
+    }
   }
 }
 
@@ -455,13 +473,17 @@ fig6 <- cowplot::plot_grid(
 
 ``` r
 df <- data.frame()
-for(path in list.files(path = "data/", pattern = "*_ConflictResolution.csv", full.names = TRUE)){
-  dat <- fix_old_subjects(read.csv(path))
-  cong <- cumulative_errors(dat[dat$Conflict == "False", ])
-  cong$Conflict <- FALSE
-  incong <- cumulative_errors(dat[dat$Conflict == "True", ])
-  incong$Conflict <- TRUE
-  df <- rbind(df, rbind(cong, incong))
+for(participant in list.files(path = "../data/pilot/")){
+  if(!participant %in% c("S11")){
+    for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ConflictResolution.csv", full.names = TRUE)){
+      dat <- fix_old_subjects(read.csv(path))
+      cong <- cumulative_errors(dat[dat$Conflict == "False", ])
+      cong$Conflict <- FALSE
+      incong <- cumulative_errors(dat[dat$Conflict == "True", ])
+      incong$Conflict <- TRUE
+      df <- rbind(df, rbind(cong, incong))
+    }
+  }
 }
 
 fig7 <- df %>%
