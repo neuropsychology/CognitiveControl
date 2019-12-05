@@ -42,14 +42,14 @@ if os.path.exists(path) is False:
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
 df_ProcessingSpeed = processing_speed(n_trials=n_trials["P1"], testmode = testmode)
-save_data(df_ProcessingSpeed, start_time, participant, task = "Processing_Speed", path = path + "P1_ProcessingSpeed")
+save_data(df_ProcessingSpeed, start_time, participant, task = "Processing_Speed", path = path + participant + "_ProcessingSpeed")
 
 
 # Part 2
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
 df_ResponseSelection = response_selection(n_trials=n_trials["P2"], testmode = testmode)
-save_data(df_ResponseSelection, start_time, participant, task = "Response_Selection", path = path + "P2_ResponseSelection")
+save_data(df_ResponseSelection, start_time, participant, task = "Response_Selection", path =path + participant + "_ResponseSelection")
 
 
 
@@ -65,7 +65,7 @@ df_ResponseInhibition = response_inhibition(n_trials=n_trials["P3"],
                                             min_SSRT=results["SSRT_Min"],
                                             max_SSRT=results["SSRT_Max"],
                                             testmode = testmode)
-save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhibition", path = path + "P3_ResponseInhibition")
+save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhibition", path = path + participant + "_ResponseInhibition")
 
 
 
@@ -74,14 +74,14 @@ save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhib
 start_time = datetime.datetime.now()
 df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"],
                                             testmode = testmode)
-save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + "P4_ConflictResolution")
+save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + participant + "_ConflictResolution")
 
 
  Part 5
  -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
 df_AttentionPriming = attention_priming(n_trials=20)
-save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + "P5_AttentionPriming")
+save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + participant + "_AttentionPriming")
 
 
 
