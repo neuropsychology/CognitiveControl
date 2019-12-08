@@ -16,10 +16,11 @@ participants).
 library(tidyverse)
 library(easystats)
 ## # Attaching packages
-## <U+2714> insight     0.7.0        <U+2714> bayestestR  0.4.0.1   
-## <U+2714> performance 0.4.0.1      <U+2714> parameters  0.2.5.1   
-## <U+2714> see         0.2.1.9000   <U+2714> correlation 0.1.0     
-## <U+2714> estimate    0.1.0        <U+2714> report      0.1.0
+## <U+2714> insight     0.7.1.1   <U+2714> bayestestR  0.4.9  
+## <U+2714> performance 0.4.0.1   <U+2714> parameters  0.3.0.1
+## <U+2714> see         0.3.0.1   <U+2714> effectsize  0.1.0  
+## <U+2714> correlation 0.1.0     <U+2714> estimate    0.1.0  
+## <U+2714> report      0.1.0
 library(cowplot)
 
 compute_cumulative <- function(data, fun = mean, col = "RT"){
@@ -110,7 +111,7 @@ fig1 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
     # geom_vline(xintercept = 50, linetype = "dotted") +
     geom_ribbon(aes(ymin = Cumulative_CI_low, ymax = Cumulative_CI_high, fill = Participant), alpha = 0.05) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -120,7 +121,7 @@ fig1 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     # geom_vline(xintercept = 50, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials"),
@@ -128,7 +129,7 @@ fig1 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     # geom_vline(xintercept = 50, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials")),
@@ -163,7 +164,7 @@ fig2 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_ribbon(aes(ymin = Cumulative_CI_low, ymax = Cumulative_CI_high, fill = Participant), alpha = 0.05) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -172,7 +173,7 @@ fig2 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials"),
@@ -180,7 +181,7 @@ fig2 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials")),
@@ -216,7 +217,7 @@ fig3 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_ribbon(aes(ymin = Cumulative_CI_low, ymax = Cumulative_CI_high, fill = Participant), alpha = 0.05) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -225,7 +226,7 @@ fig3 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials"),
@@ -233,7 +234,7 @@ fig3 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     # geom_vline(xintercept = 60, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     xlab("Number of trials")),
@@ -275,7 +276,7 @@ fig4 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Cumulative_Mean)) +
     # geom_vline(xintercept = 120, linetype = "dotted") +
     geom_ribbon(aes(ymin = Cumulative_CI_low, ymax = Cumulative_CI_high, fill = Participant), alpha = 0.05) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -286,7 +287,7 @@ fig4 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_Mean)) +
     # geom_vline(xintercept = 120, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     facet_grid(~Conflict, labeller = "label_both") +
@@ -296,7 +297,7 @@ fig4 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Change_SD)) +
     # geom_vline(xintercept = 120, linetype = "dotted") +
     geom_hline(yintercept = 0) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     facet_grid(~Conflict, labeller = "label_both") +
@@ -336,7 +337,7 @@ fig4 <- cowplot::plot_grid(
 
 <!--     geom_vline(xintercept = 60, linetype = "dotted") + -->
 
-<!--     geom_line(aes(color = Participant), size = 1) + -->
+<!--     geom_line(aes(color = Participant), size = 0.7) + -->
 
 <!--     theme_modern() + -->
 
@@ -379,7 +380,7 @@ for(participant in list.files(path = "../data/pilot/")){
 fig5 <- df %>%
   ggplot(aes(x = Stop_Signal_RT, y = Predicted)) +
   geom_ribbon(aes(ymin = CI_low, ymax = CI_high, fill = Participant), alpha = 0.1) +
-  geom_line(aes(color = Participant), size = 1) +
+  geom_line(aes(color = Participant), size = 0.7) +
   theme_modern() +
   scale_color_viridis_d(guide = FALSE) +
   scale_fill_viridis_d(guide = FALSE)  +
@@ -439,7 +440,7 @@ fig6 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Intercept)) +
     geom_hline(yintercept = 0) +
     # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Intercept_CI_high, fill = Participant), alpha = 0.1) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -449,7 +450,7 @@ fig6 <- cowplot::plot_grid(
     ggplot(aes(x = Trial_Order, y = Slope)) +
     geom_hline(yintercept = 0) +
     # geom_ribbon(aes(ymin = Intercept_CI_low, ymax = Slope_CI_high, fill = Participant), alpha = 0.1) +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +
@@ -490,7 +491,7 @@ for(participant in list.files(path = "../data/pilot/")){
 fig7 <- df %>%
     ggplot(aes(x = Trial_Order, y = Error_Probability)) +
     # geom_vline(xintercept = 120, linetype = "dotted") +
-    geom_line(aes(color = Participant), size = 1) +
+    geom_line(aes(color = Participant), size = 0.7) +
     theme_modern() +
     scale_color_viridis_d(guide = FALSE) +
     scale_fill_viridis_d(guide = FALSE) +

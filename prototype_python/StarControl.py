@@ -36,7 +36,8 @@ if os.path.exists(path) is False:
     os.mkdir(path)
 
 
-
+# Instructions (can be activated to increase the pressure in the context of experiments with students)
+n.instructions("This is a game designed to measure how fast your are.\n\nIndeed, speed has been shown to a reliable index of intellectual ability and mental agility.\n\nThe task is repetitive and long on purpose, as the ability of maintaining speed until the end is also an indicator of cognitive altertness and aptitude.\n\nHence, throughout the game, we would like you to try responding as fast as possible.", end_text="Press ENTER to start.")
 
 # Part 1
 # -----------------------------------------------------------------------------
@@ -84,6 +85,5 @@ df_AttentionPriming = attention_priming(n_trials=20)
 save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + participant + "_AttentionPriming")
 
 
-
-print("Duration: %0.2f min" %((datetime.datetime.now()-t0).total_seconds()/60))
+n.instructions("Thank you!", end_text="Press ENTER to quit.")
 n.close()
