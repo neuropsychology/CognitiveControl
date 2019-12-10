@@ -13,6 +13,7 @@ from StarControl_Statistics import *
 
 # Parameters
 testmode = False
+display_trigger = True
 staircase = False
 n_trials = {"P1": 60, "P2": 80, "P3": 160, "P4": 160}
 #n_trials = {"P1": 6, "P2": 6, "P3": 30, "P4": 6}
@@ -42,14 +43,14 @@ n.instructions("This is a game designed to measure how fast your are, as speed h
 # Part 1
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
-df_ProcessingSpeed = processing_speed(n_trials=n_trials["P1"], testmode = testmode)
+df_ProcessingSpeed = processing_speed(n_trials=n_trials["P1"], testmode = testmode, display_trigger = display_trigger)
 save_data(df_ProcessingSpeed, start_time, participant, task = "Processing_Speed", path = path + participant + "_ProcessingSpeed")
 
 
 # Part 2
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
-df_ResponseSelection = response_selection(n_trials=n_trials["P2"], testmode = testmode)
+df_ResponseSelection = response_selection(n_trials=n_trials["P2"], testmode = testmode, display_trigger = display_trigger)
 save_data(df_ResponseSelection, start_time, participant, task = "Response_Selection", path =path + participant + "_ResponseSelection")
 
 
@@ -65,7 +66,8 @@ start_time = datetime.datetime.now()
 df_ResponseInhibition = response_inhibition(n_trials=n_trials["P3"],
                                             min_SSRT=results["SSRT_Min"],
                                             max_SSRT=results["SSRT_Max"],
-                                            testmode = testmode)
+                                            testmode = testmode, 
+                                            display_trigger = display_trigger)
 save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhibition", path = path + participant + "_ResponseInhibition")
 
 
@@ -74,7 +76,8 @@ save_data(df_ResponseInhibition, start_time, participant, task = "Response_Inhib
 # -----------------------------------------------------------------------------
 start_time = datetime.datetime.now()
 df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"],
-                                            testmode = testmode)
+                                            testmode = testmode, 
+                                            display_trigger = display_trigger)
 save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + participant + "_ConflictResolution")
 
 
@@ -85,5 +88,5 @@ save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resol
 #save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + participant + "_AttentionPriming")
 
 
-n.instructions("Thank you!", end_text="Press ENTER to quit.")
+n.instructions("Thank you! The task has ended.", end_text="Please inform the experimenter.")
 n.close()

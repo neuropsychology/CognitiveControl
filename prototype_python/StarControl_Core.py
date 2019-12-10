@@ -58,10 +58,12 @@ def display_fire(side="RIGHT"):
     elif side == "LEFT":
         n.image("assets/fire.png", x=-0.65, y=-7.75)
 
-def display_instructions(text="text instructions", text_end="Shoot to start the mission.", background = (13,71,161)):
+def display_instructions(text="text instructions", text_end="Shoot to start the mission.", background = (13,71,161), display_trigger = False):
     n.newpage(background, auto_refresh=False)
     n.write("\n\n\n" + text, color="white", long_text = True)
     n.write(text_end, color="white", y=-9)
+    if display_trigger is True:
+        trigger.stop()
     n.refresh()
     n.response(allow=["DOWN", "RIGHT", "LEFT", "SPACE"])
 
@@ -101,9 +103,11 @@ def display_cue(side="RIGHT", conflict=False):
 # =============================================================================
 # BASIC
 # =============================================================================
-def ITI(duration=1000, testmode = False):
+def ITI(duration=1000, testmode = False, display_trigger = False):
     display_background()
     display_ship()
+    if display_trigger is True:
+        trigger.stop()
     n.refresh()
     time = datetime.datetime.now()
     response = np.nan
@@ -123,7 +127,7 @@ def ITI(duration=1000, testmode = False):
 
 
 
-def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = np.nan, time_max = 1500, testmode = False):
+def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = np.nan, time_max = 1500, testmode = False, display_trigger = False):
     if stop == 0:
         if allies is False:
             display_enemy(side=side, stop=True)
@@ -134,7 +138,8 @@ def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = 
             display_enemy(side=side)
         elif allies is True:
             display_enemy(side=side, allies = True)
-    trigger.start()
+    if display_trigger is True:
+        trigger.start()
     n.refresh()
     time = datetime.datetime.now()
 
@@ -173,7 +178,8 @@ def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = 
 
     if testmode is False:
         if response in ["LEFT", "RIGHT", "DOWN"]:
-            trigger.stop(background = background_color)
+            if display_trigger is True:
+                trigger.stop()
             n.refresh()
             n.time.wait(200)
     return({"Response": response,

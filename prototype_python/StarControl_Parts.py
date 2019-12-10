@@ -13,7 +13,7 @@ from StarControl_Utils import *
 # -----------------------------------------------------------------------------
 # Part 1
 # -----------------------------------------------------------------------------
-def processing_speed(n_trials=60, testmode = False):
+def processing_speed(n_trials=60, testmode = False, display_trigger = False):
 
     # Data creation
     data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
@@ -27,27 +27,34 @@ def processing_speed(n_trials=60, testmode = False):
     if testmode is False:
         n.newpage((24,4,64), auto_refresh=False)
         n.write("One year ago...", color="white", y=2, size=1.5)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(1500)
         n.write("...deep inside the REBEL territory...", color="white", y=0, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(2500)
-        display_instructions("""Okay, pilot, here's the mission briefing.\n\nThe commander requires you to destroy all the incoming enemies... Nothing too hard for our best pilot!""", text_end="Press SPACE to continue.")
-        display_instructions("""Just destroy them as fast as your can with your famous auto-aiming cannons.\n\nPress DOWN to shoot whenever an enemy appears.""")
+        display_instructions("""Okay, pilot, here's the mission briefing.\n\nThe commander requires you to destroy all the incoming enemies... Nothing too hard for our best pilot!""", text_end="Press SPACE to continue.", display_trigger = display_trigger)
+        display_instructions("""Just destroy them as fast as your can with your famous auto-aiming cannons.\n\nPress DOWN to shoot whenever an enemy appears.""", display_trigger = display_trigger)
 
     for trial in range(n_trials):
-        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
         data[trial].update(
                 display_stimulus(side=data[trial]["Stimulus_Side"],
                                  always_right = True,
-                                 testmode = testmode)
+                                 testmode = testmode,
+                                 display_trigger = display_trigger)
                 )
         data[trial]["Trial_Order"] = trial + 1
 
     # Explosion!
     if testmode is False:
-        ITI(1000)
+        ITI(1000, testmode = testmode, display_trigger = display_trigger)
         display_explosion(side = "CENTRE")
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(800)
 
@@ -61,7 +68,7 @@ def processing_speed(n_trials=60, testmode = False):
 
 # Part 2
 # -----------------------------------------------------------------------------
-def response_selection(n_trials=100, testmode = False):
+def response_selection(n_trials=100, testmode = False, display_trigger = False):
 
     # Data creation
     data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
@@ -75,26 +82,34 @@ def response_selection(n_trials=100, testmode = False):
     if testmode is False:
         n.newpage((24,4,64), auto_refresh=False)
         n.write("When suddenly...", color="white", y=5, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(2000)
         n.write("...your ship engine EXPLODES!", color="white", y=1.5, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(2500)
         n.newpage("white")
         n.time.wait(1000)
         n.write("You wake up in a hospital.", color="black", y=5, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(1500)
         n.write("One year has passed since the accident.", color="black", y=1.5, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(2000)
-        display_instructions("""Things have changed, since. You find your dear old ship, and its famous auto-aiming cannons, damaged in a dump.\n\nYou have no choice but to start again, in this new can box they call a ship...\n\nNo more auto-aiming cannons.""", text_end="Press SPACE to continue.", background = (24,4,64))
-        display_instructions("""But you're not going to give up! You're going to show everyone that you are the fastest pilot for a reason...\n\nEven if that means manually aiming at the targets!""", text_end="Press SPACE to continue.", background = (24,4,64))
-        display_instructions("""Okay, rookie, get ready for action.\n\nPress LEFT or RIGHT depending on where the enemy appears, and be as fast as possible!""")
+        display_instructions("""Things have changed, since. You find your dear old ship, and its famous auto-aiming cannons, damaged in a dump.\n\nYou have no choice but to start again, in this new can box they call a ship...\n\nNo more auto-aiming cannons.""", text_end="Press SPACE to continue.", background = (24,4,64), display_trigger = display_trigger)
+        display_instructions("""But you're not going to give up! You're going to show everyone that you are the fastest pilot for a reason...\n\nEven if that means manually aiming at the targets!""", text_end="Press SPACE to continue.", background = (24,4,64), display_trigger = display_trigger)
+        display_instructions("""Okay, rookie, get ready for action.\n\nPress LEFT or RIGHT depending on where the enemy appears, and be as fast as possible!""", display_trigger = display_trigger)
 
     for trial in range(n_trials):
-        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], testmode = testmode))
+        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
+        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], testmode = testmode, display_trigger = display_trigger))
         data[trial]["Trial_Order"] = trial + 1
 
     data = pd.DataFrame.from_dict(data, orient="index")
@@ -108,7 +123,7 @@ def response_selection(n_trials=100, testmode = False):
 
 # Part 3
 # -----------------------------------------------------------------------------
-def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667, staircase = False, testmode = False):
+def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667, staircase = False, testmode = False, display_trigger = False):
 
     def generate_data(n_trials, min_SSRT=0, max_SSRT=300, frame= 16.66667, adaptive=False):
         data = {"Stimulus_Side": ["RIGHT"]*int(n_trials/2) + ["LEFT"]* int(n_trials/2),
@@ -133,11 +148,15 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
 
     # First
     if testmode is False:
-        ITI(2000)
+        ITI(2000, testmode = testmode, display_trigger=display_trigger)
         display_enemy()
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(150)
         display_enemy(stop=True)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.response(allow=["RIGHT", "LEFT"], time_max = 1500)
         n.time.wait(1500)
@@ -146,10 +165,12 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
         # Instructions
         n.newpage((24,4,64), auto_refresh=False)
         n.write("Wait! What's that?!", color="white", y=5, size=1.2)
+        if display_trigger is True:
+            trigger.stop()
         n.refresh()
         n.time.wait(2000)
-        display_instructions("""Bad news, rookie, it seems like the rebels have upgraded some of their ships!\n\nIf we do not manage to shoot as SOON as the ennemy appears, they'll have time to activate counter-measures that will return our bullets and damage our ship.""", text_end="Press SPACE to continue.")
-        display_instructions("""Shoot the incoming ships as FAST as possible, before a RED CROSS appears.\n\nDo not shoot at the RED CROSS, or it will harm us too!""")
+        display_instructions("""Bad news, rookie, it seems like the rebels have upgraded some of their ships!\n\nIf we do not manage to shoot as SOON as the ennemy appears, they'll have time to activate counter-measures that will return our bullets and damage our ship.""", text_end="Press SPACE to continue.", display_trigger = display_trigger)
+        display_instructions("""Shoot the incoming ships as FAST as possible, before a RED CROSS appears.\n\nDo not shoot at the RED CROSS, or it will harm us too!""", display_trigger = display_trigger)
 
     # Generate data
     if staircase is True:
@@ -163,15 +184,15 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
     # Run trials
     if staircase is False:
         for trial in range(0, n_trials):
-            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
-            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
+            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
+            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode, display_trigger = display_trigger))
             data[trial]["Trial_Order"] = trial + 1
 
 #    # With staircase
 #    else:
 #        for trial in range(0, int(n_trials/2)):
-#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
-#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
+#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
+#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode, display_trigger = display_trigger))
 #            if staircase is True:
 #                if data[trial]["Stop_Signal"] is True:
 #                    if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
@@ -186,10 +207,10 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
 #            data_staircase[i + int(n_trials/2)] = data_staircase.pop(i)
 #        data.update(data_staircase)
 #        for trial in range(int(n_trials/2), n_trials):
-#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+#            data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
 #            if data[trial]["Stop_Signal_RT"] == -1:
 #                data[trial]["Stop_Signal_RT"] = staircase.predict_next_value()
-#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode))
+#            data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], stop=data[trial]["Stop_Signal_RT"], testmode = testmode, display_trigger = display_trigger))
 #            if data[trial]["Stop_Signal"] is True:
 #                if data[trial]['RT'] >= data[trial]["Stop_Signal_RT"]:
 #                    if data[trial]["Response"] == "Time_Max_Exceeded":
@@ -211,7 +232,7 @@ def response_inhibition(n_trials=200, min_SSRT=0, max_SSRT=300, frame = 16.66667
 
 # Part 4
 # -----------------------------------------------------------------------------
-def attention_priming(n_trials=20):
+def attention_priming(n_trials=20, display_trigger = False):
 
 
     # Data creation
@@ -225,15 +246,17 @@ def attention_priming(n_trials=20):
     # Instructions
     n.newpage((24,4,64), auto_refresh=False)
     n.write("Well done! You're doing great!", color="white", y=5, size=1.5)
+    if display_trigger is True:
+            trigger.stop()
     n.refresh()
     n.time.wait(2000)
-    display_instructions("""Our engineers have worked hard over the past months. We are now able to prevent the rebels' ships from gathering power. \n\nSo no more RED CROSS!""", text_end ="Press SPACE to continue.")
-    display_instructions("""For your next mission, our engineers have also improved your radar. We can now predict the position of the rebels' ships even before they emerge!\n\nThis new technology is going to help you improve your speed significantly.\n\nGive it a try, and show us again how FAST you are.""")
+    display_instructions("""Our engineers have worked hard over the past months. We are now able to prevent the rebels' ships from gathering power. \n\nSo no more RED CROSS!""", text_end ="Press SPACE to continue.", display_trigger = display_trigger)
+    display_instructions("""For your next mission, our engineers have also improved your radar. We can now predict the position of the rebels' ships even before they emerge!\n\nThis new technology is going to help you improve your speed significantly.\n\nGive it a try, and show us again how FAST you are.""", display_trigger = display_trigger)
 
     for trial in range(n_trials):
-        data[trial].update(ITI(data[trial]["ITI"]))
+        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
         data[trial].update(prime(side=data[trial]["Stimulus_Side"], duration=data[trial]["Priming_Interval"]))
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"]))
+        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], testmode = testmode, display_trigger = display_trigger))
         data[trial]["Trial_Order"] = trial + 1
 
     data = pd.DataFrame.from_dict(data, orient="index")
@@ -244,17 +267,17 @@ def attention_priming(n_trials=20):
 
 # Part 6
 # -----------------------------------------------------------------------------
-def conflict_resolution(n_trials=200, testmode = False):
+def conflict_resolution(n_trials=200, testmode = False, display_trigger = False):
 
     # Congruent practice
     # Instructions
     if testmode is False:
-        display_instructions("""Impressive job, pilot!\n\nWe are winning this war! But the rebels are smart. This time, they have disguised themselves as CIVILIANS.\n\nThankfully, our engineers have developed a radar that will point toward the enemy ship.""", text_end ="Press SPACE to continue.")
-        display_instructions("""Shoot LEFT and RIGHT according to the radar arrows that will appear in the centre.\n\nRemember to be as fast as possible!""", text_end ="Press SPACE to continue.")
+        display_instructions("""Impressive job, pilot!\n\nWe are winning this war! But the rebels are smart. This time, they have disguised themselves as CIVILIANS.\n\nThankfully, our engineers have developed a radar that will point toward the enemy ship.""", text_end ="Press SPACE to continue.", display_trigger = display_trigger)
+        display_instructions("""Shoot LEFT and RIGHT according to the radar arrows that will appear in the centre.\n\nRemember to be as fast as possible!""", text_end ="Press SPACE to continue.", display_trigger = display_trigger)
         for practice_trial in range(7):
-            ITI([1000, 1250, 1000, 1500, 1000, 1250, 1500][practice_trial], testmode = testmode)
+            ITI([1000, 1250, 1000, 1500, 1000, 1250, 1500][practice_trial], testmode = testmode, display_trigger = display_trigger)
             prime(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], conflict=False, duration = 0, testmode = testmode)
-            display_stimulus(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], allies = True, testmode = testmode)
+            display_stimulus(side=["RIGHT", "LEFT", "RIGHT", "RIGHT", "LEFT", "LEFT", "RIGHT"][practice_trial], allies = True, testmode = testmode, display_trigger = display_trigger)
 
 
 
@@ -268,13 +291,13 @@ def conflict_resolution(n_trials=200, testmode = False):
 
     # Instructions
     if testmode is False:
-        display_instructions("""You're doing great!\n\nUnfortunately, it seems that they found a way a way of hacking our lateral radar antennas. You can only trust and rely on the CENTRAL arrow to know the direction to shoot at.""", text_end ="Press SPACE to continue.")
-        display_instructions("""Shoot LEFT and RIGHT according to the CENTRAL radar arrow.\n\nRemember to be as fast as possible!""")
+        display_instructions("""You're doing great!\n\nUnfortunately, it seems that they found a way a way of hacking our lateral radar antennas. You can only trust and rely on the CENTRAL arrow to know the direction to shoot at.""", text_end ="Press SPACE to continue.", display_trigger = display_trigger)
+        display_instructions("""Shoot LEFT and RIGHT according to the CENTRAL radar arrow.\n\nRemember to be as fast as possible!""", display_trigger = display_trigger)
 
     for trial in range(n_trials):
-        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode))
+        data[trial].update(ITI(data[trial]["ITI"], testmode = testmode, display_trigger = display_trigger))
         data[trial].update(prime(side=data[trial]["Stimulus_Side"], conflict=data[trial]["Conflict"], duration = 0, testmode = testmode))
-        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], allies = True, testmode = testmode))
+        data[trial].update(display_stimulus(side=data[trial]["Stimulus_Side"], allies = True, testmode = testmode, display_trigger = display_trigger))
         data[trial]["Trial_Order"] = trial + 1
 
     data = pd.DataFrame.from_dict(data, orient="index")
