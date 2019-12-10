@@ -37,7 +37,7 @@ if os.path.exists(path) is False:
 
 
 # Instructions (can be activated to increase the pressure in the context of experiments with students)
-n.instructions("This is a game designed to measure how fast your are.\n\nIndeed, speed has been shown to a reliable index of intellectual ability and mental agility.\n\nThe task is repetitive and long on purpose, as the ability of maintaining speed until the end is also an indicator of cognitive altertness and aptitude.\n\nHence, throughout the game, we would like you to try responding as fast as possible.", end_text="Press ENTER to start.")
+n.instructions("This is a game designed to measure how fast your are, as speed has been shown to a reliable index of intellectual ability and mental agility.\n\nThe task is repetitive and long on purpose, as the ability of maintaining speed until the end is also an indicator of cognitive altertness and aptitude.\n\nHence, throughout the game, we would like you to try responding as fast as possible.", size=0.8, end_text="Press ENTER to start the game.")
 
 # Part 1
 # -----------------------------------------------------------------------------
@@ -78,11 +78,11 @@ df_ConflictResolution = conflict_resolution(n_trials=n_trials["P4"],
 save_data(df_ConflictResolution, start_time, participant, task = "Conflict_Resolution", path = path + participant + "_ConflictResolution")
 
 
- Part 5
- -----------------------------------------------------------------------------
-start_time = datetime.datetime.now()
-df_AttentionPriming = attention_priming(n_trials=20)
-save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + participant + "_AttentionPriming")
+## Part 5
+## -----------------------------------------------------------------------------
+#start_time = datetime.datetime.now()
+#df_AttentionPriming = attention_priming(n_trials=20)
+#save_data(df_AttentionPriming, start_time, participant, task = "Attention_Priming", path = path + participant + "_AttentionPriming")
 
 
 n.instructions("Thank you!", end_text="Press ENTER to quit.")

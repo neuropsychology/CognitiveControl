@@ -8,12 +8,18 @@ from StarControl_Utils import *
 
 
 
+# =============================================================================
+# Global Parameters
+# =============================================================================
+trigger = n.Trigger(TTL=False, photosensor="black", photosensor_size = 2.5)
+background_color = (38,50,56)
+
 
 # =============================================================================
 # CORE
 # =============================================================================
 def display_background():
-    n.newpage((38,50,56), auto_refresh=False)
+    n.newpage(background_color, auto_refresh=False)
 
 def display_explosion(side="RIGHT"):
     if side == "RIGHT":
@@ -128,8 +134,10 @@ def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = 
             display_enemy(side=side)
         elif allies is True:
             display_enemy(side=side, allies = True)
+    trigger.start()
     n.refresh()
     time = datetime.datetime.now()
+
     if always_right is True:
         if testmode is False:
             response, RT = n.response(allow="DOWN", time_max = time_max)
@@ -165,6 +173,7 @@ def display_stimulus(side="RIGHT", always_right = False, allies = False, stop = 
 
     if testmode is False:
         if response in ["LEFT", "RIGHT", "DOWN"]:
+            trigger.stop(background = background_color)
             n.refresh()
             n.time.wait(200)
     return({"Response": response,
