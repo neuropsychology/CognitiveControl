@@ -202,9 +202,11 @@ fig2
 ```{r, echo = TRUE, warning=FALSE, message=FALSE}
 df <- data.frame()
 for(participant in list.files(path = "../data/pilot/")){
-  for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
+  if(!participant %in% c("S16")){
+    for(path in list.files(path = paste0("../data/pilot/", participant), pattern = "*_ResponseInhibition.csv", full.names = TRUE)){
     dat <- fix_old_subjects(read.csv(path))
     df <- rbind(df, cumulative_data(dat[dat$Stop_Signal == "False", ]))
+    }
   }
 }
 

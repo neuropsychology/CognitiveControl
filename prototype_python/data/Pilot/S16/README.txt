@@ -1,0 +1,1 @@
+ResponseInhibition is removed as participant did the task in the opposite direction (the participant pressed only when there is a red cross)
